@@ -1,0 +1,15 @@
+carpenter
+electrician
+stevedore
+inspector
+painter
+captain
+mate
+crew
+clerk
+craneOperator
+driver
+janitor
+cleaner
+engineer
+mechanic
