@@ -29,7 +29,7 @@ public class SeaPortProgram extends JFrame {
 	private World world;
 	
 	public static void main(String[] args) {
-		
+		System.out.println("Starting program");
 	}
 	
 	public SeaPortProgram() {
