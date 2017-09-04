@@ -13,5 +13,21 @@ public class Job extends Thing {
 
 	public String toString() {
 		return "";
+	}
+
+	public double getDuration() {
+		return duration;
+	}
+
+	public void setDuration(double duration) {
+		this.duration = duration;
+	}
+
+	public ArrayList<String> getRequirements() {
+		return requirements;
+	}
+
+	public void setRequirements(ArrayList<String> requirements) {
+		this.requirements = requirements;
 	}	
 }

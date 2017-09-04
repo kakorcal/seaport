@@ -3,13 +3,21 @@ package project1;
 import java.util.Scanner;
 
 public class Thing implements Comparable<Thing> {
-	
-	private int index;
 	private String name;
+	private int index;
 	private int parent;
 	
+	// default constructor
+	public Thing() {
+		this.name = null;
+		this.index = 0;
+		this.parent = 0;
+	}
+	
 	public Thing(Scanner sc) {
-		super();
+		this.name = sc.next();
+		this.index = sc.nextInt();
+		this.parent = sc.nextInt();
 	}
 
 	public int compareTo(Thing o) {
@@ -18,5 +26,17 @@ public class Thing implements Comparable<Thing> {
 	
 	public String toString() {
 		return "";
-	}	
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public int getParent() {
+		return parent;
+	}
 }

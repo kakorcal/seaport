@@ -1,11 +1,8 @@
 package project1;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -18,7 +15,6 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -26,7 +22,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
-import javax.swing.border.EmptyBorder;
 
 /*
  * File: SeaPortProgram.java
@@ -52,7 +47,6 @@ public class SeaPortProgram extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private static final int WIDTH = 580;
 	private static final int HEIGHT = 240;
-	private World world;
 	
 	public static void main(String[] args) {
 		SeaPortProgram app = new SeaPortProgram();
@@ -79,11 +73,12 @@ public class SeaPortProgram extends JFrame {
 	 * Components:
 	 * JFileChooser, JButton - for user to select file
 	 * JScrollPane, JTextArea - for displaying output
-	 * JTextField, JLabel, JButton, JRadioButton - for search
+	 * JTextField, JLabel, JButton, JRadioButton - for searching
 	 * */
 	
 	public class MainPanel extends JPanel {
 		private static final long serialVersionUID = -8940075139888617038L;
+		private World world = new World();
 		private JTextArea textAreaField = new JTextArea(10, 35);
 		private JScrollPane textAreaScrollPane = new JScrollPane(textAreaField, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		private JButton newFileButton = new JButton("New File");
@@ -161,30 +156,27 @@ public class SeaPortProgram extends JFrame {
 		// https://www.youtube.com/watch?v=xkcs25Ustag
 		private void openFile() {
 			JFileChooser fileChooser = new JFileChooser(".");
-			StringBuilder sb = new StringBuilder();
 			
 			try {
 				if(fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 					File file = fileChooser.getSelectedFile();
 					
-					Scanner input = new Scanner(file);
+					Scanner sc = new Scanner(file);
 					
-					while(input.hasNext()) {
-						sb.append(input.nextLine());
-						sb.append("\n");
+					while(sc.hasNextLine()) {
+						world.process(sc.nextLine());
 					}
 					
-					input.close();
+					sc.close();
+					textAreaField.setText(world.toString());
 				}else {
-					sb.append("No file was selected");
+					textAreaField.setText("No file was selected");
 				}
-				
-				textAreaField.setText(sb.toString());
 			}catch(Exception e) {
-				e.printStackTrace();
+				textAreaField.setText("Failed to process file");
 			}
 		}
-		
+				
 		class FileButtonListener extends MouseAdapter {
 			public void mouseClicked(MouseEvent event) {
 				openFile();
@@ -193,7 +185,7 @@ public class SeaPortProgram extends JFrame {
 				
 		class SearchButtonListener extends MouseAdapter {
 			public void mouseClicked(MouseEvent event) {
-
+				
 			}
 		}
 	}

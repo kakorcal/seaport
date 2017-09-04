@@ -11,5 +11,13 @@ public class Dock extends Thing {
 
 	public String toString() {
 		return "";
+	}
+
+	public Ship getShip() {
+		return ship;
+	}
+
+	public void setShip(Ship ship) {
+		this.ship = ship;
 	}	
 }
