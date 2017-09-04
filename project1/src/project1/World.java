@@ -13,6 +13,7 @@ public class World extends Thing {
 	
 	public void process(String st) {
 		System.out.println("Processing > " + st);
+		
 	    Scanner sc = new Scanner(st);
 	    
 	    if (!sc.hasNext()) {
@@ -28,8 +29,10 @@ public class World extends Thing {
 	    		assignDock(new Dock(sc));
 	    		break;
 	    	case "pship":
+	    		assignShip(new PassengerShip(sc));
+	    		break;
 	    	case "cship":
-	    		assignShip(new Ship(sc));	    		
+	    		assignShip(new CargoShip(sc));	    		
 	    		break;
 	    	case "person":
 	    		assignPerson(new Person(sc));
@@ -99,6 +102,6 @@ public class World extends Thing {
 	}
 
 	public String toString() {
-		return "";
+		return ">>>>> The world:" + ports.get(0).toString();
 	}	
 }

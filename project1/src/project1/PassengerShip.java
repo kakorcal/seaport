@@ -15,7 +15,7 @@ public class PassengerShip extends Ship {
 	}
 
 	public String toString() {
-		return "";
+		return "Passenger Ship: " + super.toString();
 	}
 
 	public int getNumberOfOccupiedRooms() {

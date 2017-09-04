@@ -15,7 +15,7 @@ public class CargoShip extends Ship {
 	}
 
 	public String toString() {
-		return "";
+		return "Cargo Ship: " + super.toString();
 	}
 
 	public double getCargoValue() {

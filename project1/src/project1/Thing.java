@@ -25,7 +25,7 @@ public class Thing implements Comparable<Thing> {
 	}
 	
 	public String toString() {
-		return "";
+		return name + " " + index;
 	}
 
 	public String getName() {

@@ -10,7 +10,7 @@ public class Dock extends Thing {
 	}
 
 	public String toString() {
-		return "";
+		return "Dock: " + super.toString();
 	}
 
 	public Ship getShip() {

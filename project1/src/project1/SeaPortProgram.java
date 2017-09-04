@@ -96,7 +96,6 @@ public class SeaPortProgram extends JFrame {
 			JPanel container = new JPanel(new GridBagLayout());
 			GridBagConstraints constraints = new GridBagConstraints();
 			
-			
 			/*
 			 * Display area
 			 * */

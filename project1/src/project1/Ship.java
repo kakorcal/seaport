@@ -21,7 +21,7 @@ public class Ship extends Thing {
 	}
 
 	public String toString() {
-		return "";
+		return super.toString();
 	}
 
 	public PortTime getArrivalTime() {

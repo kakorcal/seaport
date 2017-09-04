@@ -14,7 +14,32 @@ public class SeaPort extends Thing {
 	}
 
 	public String toString() {
-		return "";
+		String st = "\n\nSeaPort: " + super.toString();
+		
+	    for (Dock md: docks) {
+	    	st += "\n  " + md.toString();
+	    	st += "\n    Ship: " + md.getShip().toString();
+	    }
+	    
+	    st += "\n\n --- List of all ships in que:";
+	    
+	    for (Ship ms: que) {
+	    	st += "\n  " + ms.toString();	    	
+	    }
+	    
+	    st += "\n\n --- List of all ships:";
+	    
+	    for (Ship ms: ships) {
+	    	st += "\n  " + ms.toString();	    	
+	    }
+	    
+	    st += "\n\n --- List of all persons:";
+	    
+	    for (Person mp: persons) {
+	    	st += "\n  " + mp.toString();	    	
+	    }
+	    
+	    return st;
 	}
 
 	public ArrayList<Dock> getDocks() {
