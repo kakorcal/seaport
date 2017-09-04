@@ -1,6 +1,32 @@
 package project1;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.util.Scanner;
+
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.WindowConstants;
+import javax.swing.border.EmptyBorder;
 
 /*
  * File: SeaPortProgram.java
@@ -24,17 +50,151 @@ import javax.swing.JFrame;
 public class SeaPortProgram extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private static final int WIDTH = 300;
-	private static final int HEIGHT = 300;
+	private static final int WIDTH = 580;
+	private static final int HEIGHT = 240;
 	private World world;
 	
 	public static void main(String[] args) {
-		System.out.println("Starting program");
+		SeaPortProgram app = new SeaPortProgram();
+		app.display();
+	}
+
+	public SeaPortProgram() {
+		super("Sea Port Program");
+		setFrame(WIDTH, HEIGHT);
+		add(new MainPanel());
+	}
+
+	private void display() {
+		setVisible(true);
+	}
+
+	private void setFrame(int width, int height) {
+		setSize(width, height);
+		setLocationRelativeTo(null);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
-	public SeaPortProgram() {
-		setSize(WIDTH, HEIGHT);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setVisible(true);
+	/*
+	 * Components:
+	 * JFileChooser, JButton - for user to select file
+	 * JScrollPane, JTextArea - for displaying output
+	 * JTextField, JLabel, JButton, JRadioButton - for search
+	 * */
+	
+	public class MainPanel extends JPanel {
+		private static final long serialVersionUID = -8940075139888617038L;
+		private JTextArea textAreaField = new JTextArea(10, 35);
+		private JScrollPane textAreaScrollPane = new JScrollPane(textAreaField, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		private JButton newFileButton = new JButton("New File");
+		private JTextField searchField = new JTextField();
+		private JRadioButton nameButton = new JRadioButton("Name", true);
+		private JRadioButton indexButton = new JRadioButton("Index");
+		private JRadioButton  skillButton = new JRadioButton("Skill");
+		private JButton searchButton = new JButton("Search");
+
+		public MainPanel() {
+			
+			/*
+			 * Container
+			 */
+			JPanel container = new JPanel(new GridBagLayout());
+			GridBagConstraints constraints = new GridBagConstraints();
+			
+			
+			/*
+			 * Display area
+			 * */
+			JPanel textAreaPanel = new JPanel();
+			JPanel buttonPanel = new JPanel();
+			buttonPanel.add(newFileButton);
+			buttonPanel.setAlignmentX(CENTER_ALIGNMENT);
+			textAreaField.setEditable(false);
+			textAreaField.setBackground(getBackground());
+			textAreaPanel.add(textAreaScrollPane);
+			textAreaPanel.add(buttonPanel);
+			textAreaPanel.setLayout(new BoxLayout(textAreaPanel, BoxLayout.Y_AXIS));
+			
+			/*
+			 * Search area
+			 * */
+			JPanel searchAreaPanel = new JPanel();
+		    ButtonGroup searchButtonGroup = new ButtonGroup();   
+		    searchButtonGroup.add(nameButton);
+		    searchButtonGroup.add(indexButton);
+		    searchButtonGroup.add(skillButton);
+		    searchAreaPanel.add(searchField);
+		    searchAreaPanel.add(nameButton);
+		    searchAreaPanel.add(indexButton);
+		    searchAreaPanel.add(skillButton);
+		    searchAreaPanel.add(searchButton, BorderLayout.CENTER);
+		    searchAreaPanel.setLayout(new BoxLayout(searchAreaPanel, BoxLayout.Y_AXIS));
+			
+			/*
+			 * Event handlers
+			 * */
+		    FileButtonListener fileButtonListener = new FileButtonListener();
+			newFileButton.addMouseListener(fileButtonListener);
+			
+			SearchButtonListener searchButtonListener = new SearchButtonListener();
+			searchButton.addMouseListener(searchButtonListener);
+			
+			/*
+			 * Main Layout 
+			 * */
+		    constraints.anchor = GridBagConstraints.PAGE_START;
+		    constraints.insets = new Insets(3,0,0,10);
+			container.add(textAreaPanel, constraints);
+			constraints.insets = new Insets(0,0,0,0);
+			container.add(searchAreaPanel, constraints);
+			add(container);
+		}
+
+		private void displayMessage(String title, String message) {
+			JOptionPane pane = new JOptionPane(message);
+			JDialog dialog = pane.createDialog(new MainPanel(), title);
+			dialog.setVisible(true);
+			dialog.setLocationRelativeTo(null);
+			dialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+		}
+		
+		// https://www.youtube.com/watch?v=xkcs25Ustag
+		private void openFile() {
+			JFileChooser fileChooser = new JFileChooser(".");
+			StringBuilder sb = new StringBuilder();
+			
+			try {
+				if(fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+					File file = fileChooser.getSelectedFile();
+					
+					Scanner input = new Scanner(file);
+					
+					while(input.hasNext()) {
+						sb.append(input.nextLine());
+						sb.append("\n");
+					}
+					
+					input.close();
+				}else {
+					sb.append("No file was selected");
+				}
+				
+				textAreaField.setText(sb.toString());
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		class FileButtonListener extends MouseAdapter {
+			public void mouseClicked(MouseEvent event) {
+				openFile();
+			}
+		}
+				
+		class SearchButtonListener extends MouseAdapter {
+			public void mouseClicked(MouseEvent event) {
+
+			}
+		}
 	}
 }
