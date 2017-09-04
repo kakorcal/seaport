@@ -144,13 +144,13 @@ public class SeaPortProgram extends JFrame {
 			add(container);
 		}
 
-		private void displayMessage(String title, String message) {
-			JOptionPane pane = new JOptionPane(message);
-			JDialog dialog = pane.createDialog(new MainPanel(), title);
-			dialog.setVisible(true);
-			dialog.setLocationRelativeTo(null);
-			dialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-		}
+//		private void displayMessage(String title, String message) {
+//			JOptionPane pane = new JOptionPane(message);
+//			JDialog dialog = pane.createDialog(new MainPanel(), title);
+//			dialog.setVisible(true);
+//			dialog.setLocationRelativeTo(null);
+//			dialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+//		}
 		
 		// https://www.youtube.com/watch?v=xkcs25Ustag
 		private void openFile() {

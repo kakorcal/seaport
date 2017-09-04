@@ -44,7 +44,7 @@ public class World extends Thing {
 	    sc.close();
 	}
 		
-	private SeaPort getSeaPortByIndex(int index) {
+	public SeaPort getSeaPortByIndex(int index) {
 		for(SeaPort msp: ports) {
 			if(msp.getIndex() == index) {
 				return msp;
@@ -53,7 +53,7 @@ public class World extends Thing {
 		return null;
 	}
 	
-	private Dock getDockByIndex(int index) {
+	public Dock getDockByIndex(int index) {
 		for(SeaPort msp: ports) {
 			ArrayList<Dock> docks = msp.getDocks();
 			for(Dock md: docks){
@@ -65,7 +65,7 @@ public class World extends Thing {
 		return null;
 	}
 	
-	private Ship getShipByIndex(int index) {
+	public Ship getShipByIndex(int index) {
 		for(SeaPort msp: ports) {
 			ArrayList<Ship> ships = msp.getShips();
 			for(Ship ms: ships){
@@ -77,16 +77,16 @@ public class World extends Thing {
 		return null;
 	}
 	
-	private Person getPersonByIndex(Dock dock) {
+	public Person getPersonByIndex(Dock dock) {
 		return null;
 	}
 	
-	private void assignDock(Dock dock) {
+	public void assignDock(Dock dock) {
 		getSeaPortByIndex(dock.getParent()).getDocks().add(dock);
 	}
 	
 	// link ship to parent
-	private void assignShip(Ship ms) {
+	public void assignShip(Ship ms) {
 	    Dock md = getDockByIndex(ms.getParent());
 	    if (md == null) {
 	       getSeaPortByIndex(ms.getParent()).getShips().add(ms);
@@ -97,7 +97,7 @@ public class World extends Thing {
 	    }
 	}
 			
-	private void assignPerson(Person person) {
+	public void assignPerson(Person person) {
 		getSeaPortByIndex(person.getParent()).getPersons().add(person);
 	}
 
