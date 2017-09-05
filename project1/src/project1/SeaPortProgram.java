@@ -1,14 +1,18 @@
 package project1;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Scanner;
 
+import javax.swing.AbstractButton;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -78,11 +82,12 @@ public class SeaPortProgram extends JFrame {
 	
 	public class MainPanel extends JPanel {
 		private static final long serialVersionUID = -8940075139888617038L;
-		private World world = new World();
+		private World world;
 		private JTextArea textAreaField = new JTextArea(10, 35);
 		private JScrollPane textAreaScrollPane = new JScrollPane(textAreaField, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		private JButton newFileButton = new JButton("New File");
 		private JTextField searchField = new JTextField();
+		private ButtonGroup searchButtonGroup = new ButtonGroup();
 		private JRadioButton nameButton = new JRadioButton("Name", true);
 		private JRadioButton indexButton = new JRadioButton("Index");
 		private JRadioButton  skillButton = new JRadioButton("Skill");
@@ -112,8 +117,7 @@ public class SeaPortProgram extends JFrame {
 			/*
 			 * Search area
 			 * */
-			JPanel searchAreaPanel = new JPanel();
-		    ButtonGroup searchButtonGroup = new ButtonGroup();   
+			JPanel searchAreaPanel = new JPanel();   
 		    searchButtonGroup.add(nameButton);
 		    searchButtonGroup.add(indexButton);
 		    searchButtonGroup.add(skillButton);
@@ -144,17 +148,19 @@ public class SeaPortProgram extends JFrame {
 			add(container);
 		}
 
-//		private void displayMessage(String title, String message) {
-//			JOptionPane pane = new JOptionPane(message);
-//			JDialog dialog = pane.createDialog(new MainPanel(), title);
-//			dialog.setVisible(true);
-//			dialog.setLocationRelativeTo(null);
-//			dialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-//		}
+		private void displayMessage(String title, String message) {
+			JTextArea textArea = new JTextArea(message);
+			JScrollPane scrollPane = new JScrollPane(textArea);  
+			textArea.setLineWrap(true);  
+			textArea.setWrapStyleWord(true); 
+			scrollPane.setPreferredSize(new Dimension(550, 430));
+			JOptionPane.showMessageDialog(null, scrollPane, title, JOptionPane.PLAIN_MESSAGE);
+		}
 		
 		// https://www.youtube.com/watch?v=xkcs25Ustag
 		private void openFile() {
 			JFileChooser fileChooser = new JFileChooser(".");
+			world = new World();
 			
 			try {
 				if(fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
@@ -184,8 +190,127 @@ public class SeaPortProgram extends JFrame {
 				
 		class SearchButtonListener extends MouseAdapter {
 			public void mouseClicked(MouseEvent event) {
-				
+				if(textAreaField.getText().isEmpty()) {
+					displayMessage("Search", "Please choose a file to search");
+				}else {
+					String fieldName = getSelectedSearchField();
+					String target = searchField.getText();
+					ArrayList<String> searchResults = searchWorld(fieldName, target);
+					
+					if(searchResults.isEmpty()) {
+						displayMessage("Search", "No results found");					
+					}else {
+						String st = "Search results: ";
+						
+						for(String result: searchResults) {
+							st += "\n" + result;
+						}
+						
+						displayMessage("Search", st);		
+					}	
+				}				
 			}
+		}
+		
+		private ArrayList<String> searchWorld(String fieldName, String target) {
+			switch(fieldName) {
+				case "Name":
+					return searchByName(target);
+				case "Index":
+					return searchByIndex(target);
+				case "Skill":
+					return searchBySkill(target);
+				default:
+					return new ArrayList<String>();
+			}
+		}
+		
+		private ArrayList<String> searchByName(String target) {
+			ArrayList<String> results = new ArrayList<String>();
+			ArrayList<SeaPort> ports = world.getPorts();
+			
+			for(SeaPort port: ports) {
+				ArrayList<Dock> docks = port.getDocks();
+				ArrayList<Ship> ques = port.getQue();
+				ArrayList<Ship> ships = port.getShips();
+				ArrayList<Person> persons = port.getPersons();
+				
+				for(Dock dock: docks) {
+					if(dock.getName().contains(target)) results.add(dock.toString());
+				}
+				
+				for(Ship que: ques) {
+					if(que.getName().contains(target)) results.add(que.toString());
+				}
+				
+				for(Ship ship: ships) {
+					if(ship.getName().contains(target)) results.add(ship.toString());
+				}
+				
+				for(Person person: persons) {
+					if(person.getName().contains(target)) results.add(person.toString());
+				}
+			}
+			return results;
+		}
+		
+		private ArrayList<String> searchByIndex(String target) {
+			ArrayList<String> results = new ArrayList<String>();
+			ArrayList<SeaPort> ports = world.getPorts();
+			
+			for(SeaPort port: ports) {
+				ArrayList<Dock> docks = port.getDocks();
+				ArrayList<Ship> ques = port.getQue();
+				ArrayList<Ship> ships = port.getShips();
+				ArrayList<Person> persons = port.getPersons();
+				
+				for(Dock dock: docks) {
+					String st = new StringBuilder().append(dock.getIndex()).toString();
+					if(st.contains(target)) results.add(dock.toString());
+				}
+				
+				for(Ship que: ques) {
+					String st = new StringBuilder().append(que.getIndex()).toString();
+					if(st.contains(target)) results.add(que.toString());
+				}
+				
+				for(Ship ship: ships) {
+					String st = new StringBuilder().append(ship.getIndex()).toString();
+					if(st.contains(target)) results.add(ship.toString());
+				}
+				
+				for(Person person: persons) {
+					String st = new StringBuilder().append(person.getIndex()).toString();
+					if(st.contains(target)) results.add(person.toString());
+				}
+			}
+			return results;
+		}
+		
+		
+		private ArrayList<String> searchBySkill(String target) {
+			ArrayList<String> results = new ArrayList<String>();
+			ArrayList<SeaPort> ports = world.getPorts();
+			
+			for(SeaPort port: ports) {
+				ArrayList<Person> persons = port.getPersons();
+				
+				for(Person person: persons) {
+					if(person.getSkill().contains(target)) results.add(person.toString());
+				}
+			}
+			return results;
+		}
+						
+		private String getSelectedSearchField() {
+			Enumeration<AbstractButton> buttons = searchButtonGroup.getElements();
+			while(buttons.hasMoreElements()) {
+				AbstractButton button = buttons.nextElement();
+				if(button.isSelected()) {
+					return button.getText();
+				}
+			}
+			return null;
 		}
 	}
 }

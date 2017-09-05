@@ -23,7 +23,7 @@ public class World extends Thing {
 	    
 	    switch (sc.next()) {
 	    	case "port": 
-	    		ports.add(new SeaPort(sc));		
+	    		ports.add(new SeaPort(sc));
 	            break;
 	    	case "dock":
 	    		assignDock(new Dock(sc));
@@ -90,7 +90,7 @@ public class World extends Thing {
 	    Dock md = getDockByIndex(ms.getParent());
 	    if (md == null) {
 	       getSeaPortByIndex(ms.getParent()).getShips().add(ms);
-	       getSeaPortByIndex (ms.getParent()).getQue().add(ms);
+	       getSeaPortByIndex(ms.getParent()).getQue().add(ms);
 	    }else {
 	       md.setShip(ms);
 	       getSeaPortByIndex(md.getParent()).getShips().add(ms);
@@ -102,6 +102,27 @@ public class World extends Thing {
 	}
 
 	public String toString() {
-		return ">>>>> The world:" + ports.get(0).toString();
+		String st = ">>>>> The world:";
+		for(SeaPort port: ports) {
+			st += port.toString();
+		}
+		
+		return st;
+	}
+
+	public ArrayList<SeaPort> getPorts() {
+		return ports;
+	}
+
+	public void setPorts(ArrayList<SeaPort> ports) {
+		this.ports = ports;
+	}
+
+	public PortTime getTime() {
+		return time;
+	}
+
+	public void setTime(PortTime time) {
+		this.time = time;
 	}	
 }
