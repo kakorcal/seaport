@@ -16,7 +16,6 @@ import javax.swing.AbstractButton;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -25,14 +24,12 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.WindowConstants;
 
 /*
  * File: SeaPortProgram.java
  * Date: Sep 3, 2017
  * Author: Kenneth Korcal
- * Purpose:
- * 
+ * Purpose: read data file, parse into data structure, and render the data into a GUI with searching capabilities
  * */
 
 /*
@@ -41,15 +38,15 @@ import javax.swing.WindowConstants;
  * 2. user selects data file using JFileChooser 
  * 3. create data structure w/ JScrollPane and JTextArea
  * 4. add user search capabilities
- * 		• JTextField to specify search target (name, index, skill)
- * 		• don't create new data structure
- * 		• you can create structure of found items as a return value
+ * 		JTextField to specify search target (name, index, skill)
+ * 		don't create new data structure
+ * 		you can create structure of found items as a return value
  * */
 
 public class SeaPortProgram extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private static final int WIDTH = 580;
+	private static final int WIDTH = 380;
 	private static final int HEIGHT = 240;
 	
 	public static void main(String[] args) {
@@ -147,7 +144,9 @@ public class SeaPortProgram extends JFrame {
 			container.add(searchAreaPanel, constraints);
 			add(container);
 		}
-
+		
+		
+		// displays search result in separate dialog box
 		private void displayMessage(String title, String message) {
 			JTextArea textArea = new JTextArea(message);
 			JScrollPane scrollPane = new JScrollPane(textArea);  
@@ -157,6 +156,7 @@ public class SeaPortProgram extends JFrame {
 			JOptionPane.showMessageDialog(null, scrollPane, title, JOptionPane.PLAIN_MESSAGE);
 		}
 		
+		// opens file and creates data structure with the world instance
 		// https://www.youtube.com/watch?v=xkcs25Ustag
 		private void openFile() {
 			JFileChooser fileChooser = new JFileChooser(".");
@@ -187,7 +187,7 @@ public class SeaPortProgram extends JFrame {
 				openFile();
 			}
 		}
-				
+		
 		class SearchButtonListener extends MouseAdapter {
 			public void mouseClicked(MouseEvent event) {
 				if(textAreaField.getText().isEmpty()) {
@@ -212,6 +212,7 @@ public class SeaPortProgram extends JFrame {
 			}
 		}
 		
+		// the next 5 methods below are utility methods that search and accumulate the results in an arraylist
 		private ArrayList<String> searchWorld(String fieldName, String target) {
 			switch(fieldName) {
 				case "Name":

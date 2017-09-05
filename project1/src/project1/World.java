@@ -11,6 +11,7 @@ public class World extends Thing {
 		super();
 	}
 	
+	// parses the line of string into individual class members
 	public void process(String st) {
 		System.out.println("Processing > " + st);
 		
@@ -43,7 +44,8 @@ public class World extends Thing {
 	    
 	    sc.close();
 	}
-		
+	
+	// the get and assign methods below are methods that help to create the data structure hierarchy
 	public SeaPort getSeaPortByIndex(int index) {
 		for(SeaPort msp: ports) {
 			if(msp.getIndex() == index) {
