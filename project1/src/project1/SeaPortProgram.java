@@ -46,7 +46,7 @@ import javax.swing.JTextField;
 public class SeaPortProgram extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private static final int WIDTH = 380;
+	private static final int WIDTH = 580;
 	private static final int HEIGHT = 240;
 	
 	public static void main(String[] args) {
