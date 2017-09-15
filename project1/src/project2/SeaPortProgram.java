@@ -1,26 +1,25 @@
 package project2;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Scanner;
 
-import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -46,8 +45,8 @@ import javax.swing.JTextField;
 public class SeaPortProgram extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private static final int WIDTH = 580;
-	private static final int HEIGHT = 240;
+	private static final int WIDTH = 740;
+	private static final int HEIGHT = 250;
 	
 	public static void main(String[] args) {
 		SeaPortProgram app = new SeaPortProgram();
@@ -80,15 +79,24 @@ public class SeaPortProgram extends JFrame {
 	public class MainPanel extends JPanel {
 		private static final long serialVersionUID = -8940075139888617038L;
 		private World world;
-		private JTextArea textAreaField = new JTextArea(10, 35);
+		private JTextArea textAreaField = new JTextArea(11, 35);
 		private JScrollPane textAreaScrollPane = new JScrollPane(textAreaField, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		private JButton newFileButton = new JButton("New File");
+		
+		private JLabel searchFieldLabel = new JLabel("Keyword:");
 		private JTextField searchField = new JTextField();
-		private ButtonGroup searchButtonGroup = new ButtonGroup();
-		private JRadioButton nameButton = new JRadioButton("Name", true);
-		private JRadioButton indexButton = new JRadioButton("Index");
-		private JRadioButton  skillButton = new JRadioButton("Skill");
+		private JLabel searchOptionLabel = new JLabel("Option:");
+		private String[] searchOptions = {"Name", "Index", "Skill"};
 		private JButton searchButton = new JButton("Search");
+		private JComboBox<String> searchDropdown;
+		
+		private JLabel sortOrderLabel = new JLabel("Order:");
+		private JLabel sortOptionLabel = new JLabel("Option:");
+		private String[] sortOrder = {"Ascending", "Descending"};
+		private String[] sortOptions = {"None", "Weight", "Length", "Width", "Draft", "Name"};
+		private JButton sortButton = new JButton("Sort");
+	    private JComboBox<String> sortOrderDropdown;
+	    private JComboBox<String> sortOptionDropdown;
 
 		public MainPanel() {
 			
@@ -111,19 +119,66 @@ public class SeaPortProgram extends JFrame {
 			textAreaPanel.add(buttonPanel);
 			textAreaPanel.setLayout(new BoxLayout(textAreaPanel, BoxLayout.Y_AXIS));
 			
+			
+			JPanel filterAreaPanel = new JPanel();
 			/*
 			 * Search area
 			 * */
-			JPanel searchAreaPanel = new JPanel();   
-		    searchButtonGroup.add(nameButton);
-		    searchButtonGroup.add(indexButton);
-		    searchButtonGroup.add(skillButton);
-		    searchAreaPanel.add(searchField);
-		    searchAreaPanel.add(nameButton);
-		    searchAreaPanel.add(indexButton);
-		    searchAreaPanel.add(skillButton);
-		    searchAreaPanel.add(searchButton, BorderLayout.CENTER);
+			JPanel searchAreaPanel = new JPanel();
+			JPanel searchFieldPanel = new JPanel();
+			JPanel searchDropdownPanel = new JPanel();
+			JPanel searchButtonPanel = new JPanel();
+			searchAreaPanel.setBorder(BorderFactory.createTitledBorder("Search"));
+			
+			searchFieldPanel.add(searchFieldLabel);
+			searchFieldPanel.add(searchField);
+			
+			searchDropdown = new JComboBox<String>(searchOptions);
+			searchDropdownPanel.add(searchOptionLabel);
+			searchDropdownPanel.add(searchDropdown);
+			
+			searchButtonPanel.add(searchButton);
+			
+			searchFieldPanel.setLayout(new GridLayout(0, 2));
+			searchDropdownPanel.setLayout(new GridLayout(0, 2));
+			searchButtonPanel.setLayout(new GridLayout(0, 1));
+			
+		    searchAreaPanel.add(searchFieldPanel);
+		    searchAreaPanel.add(searchDropdownPanel);
+		    searchAreaPanel.add(searchButtonPanel);
 		    searchAreaPanel.setLayout(new BoxLayout(searchAreaPanel, BoxLayout.Y_AXIS));
+		    
+			/*
+			 * Sort area
+			 * */
+			JPanel sortAreaPanel = new JPanel();
+			JPanel sortOrderPanel = new JPanel();
+			JPanel sortDropdownPanel = new JPanel();
+			JPanel sortButtonPanel = new JPanel();
+			sortAreaPanel.setBorder(BorderFactory.createTitledBorder("Sort"));
+			
+			sortOrderDropdown = new JComboBox<String>(sortOrder);
+			sortOrderPanel.add(sortOrderLabel);
+			sortOrderPanel.add(sortOrderDropdown);
+			
+			sortOptionDropdown = new JComboBox<String>(sortOptions);
+			sortDropdownPanel.add(sortOptionLabel);
+			sortDropdownPanel.add(sortOptionDropdown);
+						
+			sortButtonPanel.add(sortButton);
+			
+			sortOrderPanel.setLayout(new GridLayout(0, 2));
+			sortDropdownPanel.setLayout(new GridLayout(0, 2));
+			sortButtonPanel.setLayout(new GridLayout(0, 1));
+			
+			sortAreaPanel.add(sortOrderPanel);
+			sortAreaPanel.add(sortDropdownPanel);
+			sortAreaPanel.add(sortButtonPanel);
+			sortAreaPanel.setLayout(new BoxLayout(sortAreaPanel, BoxLayout.Y_AXIS));
+		    
+			filterAreaPanel.add(searchAreaPanel);
+			filterAreaPanel.add(sortAreaPanel);
+			filterAreaPanel.setLayout(new BoxLayout(filterAreaPanel, BoxLayout.Y_AXIS));
 			
 			/*
 			 * Event handlers
@@ -141,7 +196,7 @@ public class SeaPortProgram extends JFrame {
 		    constraints.insets = new Insets(3,0,0,10);
 			container.add(textAreaPanel, constraints);
 			constraints.insets = new Insets(0,0,0,0);
-			container.add(searchAreaPanel, constraints);
+			container.add(filterAreaPanel, constraints);
 			add(container);
 		}
 		
@@ -193,7 +248,7 @@ public class SeaPortProgram extends JFrame {
 				if(textAreaField.getText().isEmpty()) {
 					displayMessage("Search", "Please choose a file to search");
 				}else {
-					String fieldName = getSelectedSearchField();
+					String fieldName = "Foo";
 					String target = searchField.getText();
 					ArrayList<String> searchResults = searchWorld(fieldName, target);
 					
@@ -303,15 +358,15 @@ public class SeaPortProgram extends JFrame {
 			return results;
 		}
 						
-		private String getSelectedSearchField() {
-			Enumeration<AbstractButton> buttons = searchButtonGroup.getElements();
-			while(buttons.hasMoreElements()) {
-				AbstractButton button = buttons.nextElement();
-				if(button.isSelected()) {
-					return button.getText();
-				}
-			}
-			return null;
-		}
+//		private String getSelectedSearchField() {
+//			Enumeration<AbstractButton> buttons = searchButtonGroup.getElements();
+//			while(buttons.hasMoreElements()) {
+//				AbstractButton button = buttons.nextElement();
+//				if(button.isSelected()) {
+//					return button.getText();
+//				}
+//			}
+//			return null;
+//		}
 	}
 }
