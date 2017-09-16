@@ -248,7 +248,7 @@ public class SeaPortProgram extends JFrame {
 				if(textAreaField.getText().isEmpty()) {
 					displayMessage("Search", "Please choose a file to search");
 				}else {
-					String fieldName = "Foo";
+					String fieldName = searchDropdown.getSelectedItem().toString();
 					String target = searchField.getText();
 					ArrayList<String> searchResults = searchWorld(fieldName, target);
 					
@@ -357,16 +357,5 @@ public class SeaPortProgram extends JFrame {
 			}
 			return results;
 		}
-						
-//		private String getSelectedSearchField() {
-//			Enumeration<AbstractButton> buttons = searchButtonGroup.getElements();
-//			while(buttons.hasMoreElements()) {
-//				AbstractButton button = buttons.nextElement();
-//				if(button.isSelected()) {
-//					return button.getText();
-//				}
-//			}
-//			return null;
-//		}
 	}
 }
