@@ -9,6 +9,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import javax.swing.BorderFactory;
@@ -283,27 +284,27 @@ public class SeaPortProgram extends JFrame {
 		
 		private ArrayList<String> searchByName(String target) {
 			ArrayList<String> results = new ArrayList<String>();
-			ArrayList<SeaPort> ports = world.getPorts();
+			HashMap<Integer, SeaPort> ports = world.getPorts();
 			
-			for(SeaPort port: ports) {
-				ArrayList<Dock> docks = port.getDocks();
-				ArrayList<Ship> ques = port.getQue();
-				ArrayList<Ship> ships = port.getShips();
-				ArrayList<Person> persons = port.getPersons();
+			for(SeaPort port: ports.values()) {
+				HashMap<Integer, Dock> docks = port.getDocks();
+				HashMap<Integer, Ship> ques = port.getQue();
+				HashMap<Integer, Ship> ships = port.getShips();
+				HashMap<Integer, Person> persons = port.getPersons();
 				
-				for(Dock dock: docks) {
+				for(Dock dock: docks.values()) {
 					if(dock.getName().contains(target)) results.add(dock.toString());
 				}
 				
-				for(Ship que: ques) {
+				for(Ship que: ques.values()) {
 					if(que.getName().contains(target)) results.add(que.toString());
 				}
 				
-				for(Ship ship: ships) {
+				for(Ship ship: ships.values()) {
 					if(ship.getName().contains(target)) results.add(ship.toString());
 				}
 				
-				for(Person person: persons) {
+				for(Person person: persons.values()) {
 					if(person.getName().contains(target)) results.add(person.toString());
 				}
 			}
@@ -312,30 +313,30 @@ public class SeaPortProgram extends JFrame {
 		
 		private ArrayList<String> searchByIndex(String target) {
 			ArrayList<String> results = new ArrayList<String>();
-			ArrayList<SeaPort> ports = world.getPorts();
+			HashMap<Integer, SeaPort> ports = world.getPorts();
 			
-			for(SeaPort port: ports) {
-				ArrayList<Dock> docks = port.getDocks();
-				ArrayList<Ship> ques = port.getQue();
-				ArrayList<Ship> ships = port.getShips();
-				ArrayList<Person> persons = port.getPersons();
+			for(SeaPort port: ports.values()) {
+				HashMap<Integer, Dock> docks = port.getDocks();
+				HashMap<Integer, Ship> ques = port.getQue();
+				HashMap<Integer, Ship> ships = port.getShips();
+				HashMap<Integer, Person> persons = port.getPersons();
 				
-				for(Dock dock: docks) {
+				for(Dock dock: docks.values()) {
 					String st = new StringBuilder().append(dock.getIndex()).toString();
 					if(st.contains(target)) results.add(dock.toString());
 				}
 				
-				for(Ship que: ques) {
+				for(Ship que: ques.values()) {
 					String st = new StringBuilder().append(que.getIndex()).toString();
 					if(st.contains(target)) results.add(que.toString());
 				}
 				
-				for(Ship ship: ships) {
+				for(Ship ship: ships.values()) {
 					String st = new StringBuilder().append(ship.getIndex()).toString();
 					if(st.contains(target)) results.add(ship.toString());
 				}
 				
-				for(Person person: persons) {
+				for(Person person: persons.values()) {
 					String st = new StringBuilder().append(person.getIndex()).toString();
 					if(st.contains(target)) results.add(person.toString());
 				}
@@ -346,12 +347,12 @@ public class SeaPortProgram extends JFrame {
 		
 		private ArrayList<String> searchBySkill(String target) {
 			ArrayList<String> results = new ArrayList<String>();
-			ArrayList<SeaPort> ports = world.getPorts();
+			HashMap<Integer, SeaPort> ports = world.getPorts();
 			
-			for(SeaPort port: ports) {
-				ArrayList<Person> persons = port.getPersons();
+			for(SeaPort port: ports.values()) {
+				HashMap<Integer, Person> persons = port.getPersons();
 				
-				for(Person person: persons) {
+				for(Person person: persons.values()) {
 					if(person.getSkill().contains(target)) results.add(person.toString());
 				}
 			}

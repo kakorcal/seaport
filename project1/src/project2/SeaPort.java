@@ -1,13 +1,13 @@
 package project2;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class SeaPort extends Thing {
-	private ArrayList<Dock> docks = new ArrayList<Dock>();
-	private ArrayList<Ship> que = new ArrayList<Ship>(); // list of ships waiting to dock
-	private ArrayList<Ship> ships = new ArrayList<Ship>(); // list of all ships at port
-	private ArrayList<Person> persons = new ArrayList<Person>(); // people with skills at this port
+	private HashMap<Integer, Dock> docks = new HashMap<Integer, Dock>();
+	private HashMap<Integer, Ship> que = new HashMap<Integer, Ship>(); // list of ships waiting to dock
+	private HashMap<Integer, Ship> ships = new HashMap<Integer, Ship>(); // list of all ships at port
+	private HashMap<Integer, Person> persons = new HashMap<Integer, Person>(); // people with skills at this port
 	
 	public SeaPort(Scanner sc) {
 		super(sc);
@@ -16,45 +16,45 @@ public class SeaPort extends Thing {
 	public String toString() {
 		String st = "\n\n>>> SeaPort: " + super.toString();
 
-	    for (Dock md: docks) {
+	    for (Dock md: docks.values()) {
 	    	st += "\n  " + md.toString();
 	    	st += "\n    Ship: " + md.getShip().toString();
 	    }
 	    
 	    st += "\n\n  --- List of all ships in que:";
 	    
-	    for (Ship ms: que) {
+	    for (Ship ms: que.values()) {
 	    	st += "\n  " + ms.toString();	    	
 	    }
 	    
 	    st += "\n\n  --- List of all ships:";
 	    
-	    for (Ship ms: ships) {
+	    for (Ship ms: ships.values()) {
 	    	st += "\n  " + ms.toString();	    	
 	    }
 	    
 	    st += "\n\n  --- List of all persons:";
 	    
-	    for (Person mp: persons) {
+	    for (Person mp: persons.values()) {
 	    	st += "\n  " + mp.toString();	    	
 	    }
 	    
 	    return st;
 	}
 
-	public ArrayList<Dock> getDocks() {
+	public HashMap<Integer, Dock> getDocks() {
 		return docks;
 	}
 
-	public ArrayList<Ship> getQue() {
+	public HashMap<Integer, Ship> getQue() {
 		return que;
 	}
 
-	public ArrayList<Ship> getShips() {
+	public HashMap<Integer, Ship> getShips() {
 		return ships;
 	}
 
-	public ArrayList<Person> getPersons() {
+	public HashMap<Integer, Person> getPersons() {
 		return persons;
 	}	
 }
