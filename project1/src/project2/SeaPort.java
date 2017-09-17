@@ -56,5 +56,21 @@ public class SeaPort extends Thing {
 
 	public HashMap<Integer, Person> getPersons() {
 		return persons;
+	}
+
+	public void setDocks(HashMap<Integer, Dock> docks) {
+		this.docks = docks;
+	}
+
+	public void setQue(HashMap<Integer, Ship> que) {
+		this.que = que;
+	}
+
+	public void setShips(HashMap<Integer, Ship> ships) {
+		this.ships = ships;
+	}
+
+	public void setPersons(HashMap<Integer, Person> persons) {
+		this.persons = persons;
 	}	
 }

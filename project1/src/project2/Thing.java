@@ -21,7 +21,7 @@ public class Thing implements Comparable<Thing> {
 	}
 
 	public int compareTo(Thing o) {
-		return 0;
+		return name.compareToIgnoreCase(o.name);
 	}
 	
 	public String toString() {

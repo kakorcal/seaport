@@ -280,12 +280,10 @@ public class SeaPortProgram extends JFrame {
 				case "Draft":
 					return sortByShip(sortOption, asc);
 				case "Name":
-					break;
+					return sortByName(asc);
 				default:
 					return sortByShip(sortOption, asc);
 			}
-			
-			return new ArrayList<String>();
 		}
 		
 		// references
@@ -299,19 +297,19 @@ public class SeaPortProgram extends JFrame {
 			for(SeaPort port: world.getPorts().values()) {
 				String portName = port.getName();
 				Integer portNumber = port.getIndex();
-				HashMap<Integer, Ship> que = port.getQue();
-				ArrayList<Ship> ships = new ArrayList<Ship>(que.values());
+				HashMap<Integer, Ship> ships = port.getShips();
+				ArrayList<Ship> listOfShips = new ArrayList<Ship>(ships.values());
 				
 				if(asc) {
-					Collections.sort(ships, getShipComparator(sortOption));
+					Collections.sort(listOfShips, getShipComparator(sortOption));
 				}else {
-					Collections.sort(ships, getShipComparator(sortOption).reversed());					
+					Collections.sort(listOfShips, getShipComparator(sortOption).reversed());					
 				}
 
 				String seaport = ">>> SeaPort: " + portName + " " + portNumber;
-				seaport += "\n\n  --- List of all ships in que:";
+				seaport += "\n\n  --- List of all ships:";
 				results.add(seaport);
-				for(Ship ship: ships) {
+				for(Ship ship: listOfShips) {
 					results.add(ship.toString());
 					results.add(ship.getShipDimensions());
 				} 
@@ -330,19 +328,11 @@ public class SeaPortProgram extends JFrame {
 					return new SortByShipWidth();
 				case "Draft":
 					return new SortByShipDraft();
-				case "Name":
-					return new SortByShipWidth();
 				default:
 					return new SortByShipWidth();
 			}
 		}
-		
-
-		
-//		Comparator<Entry<String, String>> valueComparator = new Comparator<Entry<String,String>>() { 
-//			@Override public int compare(Entry<String, String> e1, Entry<String, String> e2) { String v1 = e1.getValue(); String v2 = e2.getValue(); return v1.compareTo(v2); } 
-//		};
-		
+				
         class SortByShipWeight implements Comparator<Ship> {
             public int compare(Ship a, Ship b) {
             	return Double.compare(a.getWeight(), b.getWeight());
@@ -366,12 +356,65 @@ public class SeaPortProgram extends JFrame {
             	return Double.compare(a.getLength(), b.getLength());
             }
         }
-         
-//        class SortName implements Comparator<Entry<Integer, Integer>> {
-//            public int compare(Entry<Integer, Integer> a, Entry<Integer, Integer> b, boolean asc) {
-//                return a.name.compareTo(b.name);
-//            }
-//        }
+                 
+        private ArrayList<String> sortByName(boolean asc) {
+			ArrayList<String> results = new ArrayList<String>();
+			if(world == null) return results;
+			
+			// sort ports by name
+			// for each port in sorted port, sort docks que ships persons by name
+			// append string to results
+			
+			ArrayList<SeaPort> ports = new ArrayList<SeaPort>(world.getPorts().values());
+			
+			if(asc) {
+				Collections.sort(ports);
+			}else {
+				Collections.reverse(ports);
+			}
+			
+			for(SeaPort port: ports) {
+				HashMap<Integer, Dock> docks = port.getDocks();
+				HashMap<Integer, Ship> ships = port.getShips();
+				HashMap<Integer, Ship> ques = port.getQue();
+				HashMap<Integer, Person> persons = port.getPersons();
+				
+				ArrayList<Dock> listOfDocks = new ArrayList<Dock>(docks.values());
+				ArrayList<Ship> listOfShips = new ArrayList<Ship>(ships.values());
+				ArrayList<Ship> listOfQue = new ArrayList<Ship>(ques.values());
+				ArrayList<Person> listOfPersons = new ArrayList<Person>(persons.values());
+				
+				if(asc) {
+					Collections.sort(listOfDocks);
+					Collections.sort(listOfShips);
+					Collections.sort(listOfQue);
+					Collections.sort(listOfPersons);
+				}else {
+					Collections.reverse(listOfDocks);
+					Collections.reverse(listOfShips);
+					Collections.reverse(listOfQue);
+					Collections.reverse(listOfPersons);
+				}
+		        
+				HashMap<Integer, Dock> sortedDocks = new HashMap<Integer, Dock>(listOfDocks.size());
+				HashMap<Integer, Ship> sortedShips = new HashMap<Integer, Ship>(listOfShips.size());
+				HashMap<Integer, Ship> sortedQue = new HashMap<Integer, Ship>(listOfQue.size());
+				HashMap<Integer, Person> sortedPersons = new HashMap<Integer, Person>(listOfPersons.size());
+				
+				for(int i = 0; i < listOfDocks.size(); i++) sortedDocks.put(i, listOfDocks.get(i));
+				for(int i = 0; i < listOfShips.size(); i++) sortedShips.put(i, listOfShips.get(i));
+				for(int i = 0; i < listOfQue.size(); i++) sortedQue.put(i, listOfQue.get(i));
+				for(int i = 0; i < listOfPersons.size(); i++) sortedPersons.put(i, listOfPersons.get(i));
+				
+				port.setDocks(sortedDocks);
+				port.setQue(sortedQue);
+				port.setShips(sortedShips);
+				port.setPersons(sortedPersons);
+				results.add(port.toString());
+			}
+			
+			return results;
+        }
         		
 		class SearchButtonListener extends MouseAdapter {
 			public void mouseClicked(MouseEvent event) {
