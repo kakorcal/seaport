@@ -29,9 +29,9 @@ import javax.swing.JTextField;
 
 /*
  * File: SeaPortProgram.java
- * Date: Sep 3, 2017
+ * Date: Sep 17, 2017
  * Author: Kenneth Korcal
- * Purpose: read data file, parse into data structure, and render the data into a GUI with searching capabilities
+ * Purpose: read data file, parse into data structure, and render the data into a GUI with searching and sorting capabilities
  * */
 
 /*
@@ -43,6 +43,8 @@ import javax.swing.JTextField;
  * 		JTextField to specify search target (name, index, skill)
  * 		don't create new data structure
  * 		you can create structure of found items as a return value
+ * 5. use HashMaps instead of ArrayLists
+ * 6. add sort capabilities (width, weight, draft, length, name)
  * */
 
 public class SeaPortProgram extends JFrame {
@@ -357,13 +359,13 @@ public class SeaPortProgram extends JFrame {
             }
         }
                  
+        // sort ports by name
+        // for each port in sorted port, sort docks que ships persons by name
+        // append string to results
         private ArrayList<String> sortByName(boolean asc) {
 			ArrayList<String> results = new ArrayList<String>();
 			if(world == null) return results;
 			
-			// sort ports by name
-			// for each port in sorted port, sort docks que ships persons by name
-			// append string to results
 			
 			ArrayList<SeaPort> ports = new ArrayList<SeaPort>(world.getPorts().values());
 			
