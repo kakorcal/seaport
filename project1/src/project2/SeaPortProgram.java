@@ -9,6 +9,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -89,12 +91,12 @@ public class SeaPortProgram extends JFrame {
 		private JLabel searchOptionLabel = new JLabel("Option:");
 		private String[] searchOptions = {"Name", "Index", "Skill"};
 		private JButton searchButton = new JButton("Search");
-		private JComboBox<String> searchDropdown;
+		private JComboBox<String> searchOptionDropdown;
 		
 		private JLabel sortOrderLabel = new JLabel("Order:");
 		private JLabel sortOptionLabel = new JLabel("Option:");
 		private String[] sortOrder = {"Ascending", "Descending"};
-		private String[] sortOptions = {"None", "Weight", "Length", "Width", "Draft", "Name"};
+		private String[] sortOptions = {"Weight", "Length", "Width", "Draft", "Name"};
 		private JButton sortButton = new JButton("Sort");
 	    private JComboBox<String> sortOrderDropdown;
 	    private JComboBox<String> sortOptionDropdown;
@@ -113,7 +115,7 @@ public class SeaPortProgram extends JFrame {
 			JPanel textAreaPanel = new JPanel();
 			JPanel buttonPanel = new JPanel();
 			buttonPanel.add(newFileButton);
-			buttonPanel.setAlignmentX(CENTER_ALIGNMENT);
+			buttonPanel.setLayout(new GridLayout(1, 0));
 			textAreaField.setEditable(false);
 			textAreaField.setBackground(getBackground());
 			textAreaPanel.add(textAreaScrollPane);
@@ -134,9 +136,9 @@ public class SeaPortProgram extends JFrame {
 			searchFieldPanel.add(searchFieldLabel);
 			searchFieldPanel.add(searchField);
 			
-			searchDropdown = new JComboBox<String>(searchOptions);
+			searchOptionDropdown = new JComboBox<String>(searchOptions);
 			searchDropdownPanel.add(searchOptionLabel);
-			searchDropdownPanel.add(searchDropdown);
+			searchDropdownPanel.add(searchOptionDropdown);
 			
 			searchButtonPanel.add(searchButton);
 			
@@ -189,6 +191,9 @@ public class SeaPortProgram extends JFrame {
 			
 			SearchButtonListener searchButtonListener = new SearchButtonListener();
 			searchButton.addMouseListener(searchButtonListener);
+			
+			SortButtonListener sortButtonListener = new SortButtonListener();
+			sortButton.addMouseListener(sortButtonListener);
 			
 			/*
 			 * Main Layout 
@@ -244,12 +249,136 @@ public class SeaPortProgram extends JFrame {
 			}
 		}
 		
+		class SortButtonListener extends MouseAdapter {
+			public void mouseClicked(MouseEvent event) {
+				String sortOrder = sortOrderDropdown.getSelectedItem().toString();
+				String sortOption = sortOptionDropdown.getSelectedItem().toString(); 
+				ArrayList<String> sortResults = sortWorld(sortOption, sortOrder);
+				
+				if(sortResults.isEmpty()) {
+					displayMessage("Sort", "No results found");
+				}else {
+					String st = "Sort results: ";
+					
+					for(String result: sortResults) {
+						st += "\n" + result;
+					}
+					
+					displayMessage("Sort", st);					
+				}
+			}
+		}
+		
+		private ArrayList<String> sortWorld(String sortOption, String sortOrder) {
+			boolean asc = true;
+			if(sortOrder.equals("Descending")) asc = false;			
+			
+			switch(sortOption) {
+				case "Weight":
+				case "Length":
+				case "Width":
+				case "Draft":
+					return sortByShip(sortOption, asc);
+				case "Name":
+					break;
+				default:
+					return sortByShip(sortOption, asc);
+			}
+			
+			return new ArrayList<String>();
+		}
+		
+		// references
+		// http://www.java67.com/2015/01/how-to-sort-hashmap-in-java-based-on.html
+		// http://www.geeksforgeeks.org/comparator-interface-java/
+		private ArrayList<String> sortByShip(String sortOption, boolean asc) {
+			ArrayList<String> results = new ArrayList<String>();
+			if(world == null) return results;
+						
+			// for each port, get que, sort it and append to result
+			for(SeaPort port: world.getPorts().values()) {
+				String portName = port.getName();
+				Integer portNumber = port.getIndex();
+				HashMap<Integer, Ship> que = port.getQue();
+				ArrayList<Ship> ships = new ArrayList<Ship>(que.values());
+				
+				if(asc) {
+					Collections.sort(ships, getShipComparator(sortOption));
+				}else {
+					Collections.sort(ships, getShipComparator(sortOption).reversed());					
+				}
+
+				String seaport = ">>> SeaPort: " + portName + " " + portNumber;
+				seaport += "\n\n  --- List of all ships in que:";
+				results.add(seaport);
+				for(Ship ship: ships) {
+					results.add(ship.toString());
+					results.add(ship.getShipDimensions());
+				} 
+			}
+						
+			return results;
+		}
+		
+		private Comparator<Ship> getShipComparator(String sortOption) {
+			switch(sortOption) {
+				case "Weight":
+					return new SortByShipWeight();
+				case "Length":
+					return new SortByShipLength();
+				case "Width":
+					return new SortByShipWidth();
+				case "Draft":
+					return new SortByShipDraft();
+				case "Name":
+					return new SortByShipWidth();
+				default:
+					return new SortByShipWidth();
+			}
+		}
+		
+
+		
+//		Comparator<Entry<String, String>> valueComparator = new Comparator<Entry<String,String>>() { 
+//			@Override public int compare(Entry<String, String> e1, Entry<String, String> e2) { String v1 = e1.getValue(); String v2 = e2.getValue(); return v1.compareTo(v2); } 
+//		};
+		
+        class SortByShipWeight implements Comparator<Ship> {
+            public int compare(Ship a, Ship b) {
+            	return Double.compare(a.getWeight(), b.getWeight());
+            }
+        }
+        
+        class SortByShipWidth implements Comparator<Ship> {
+            public int compare(Ship a, Ship b) {
+            	return Double.compare(a.getWeight(), b.getWeight());
+            }
+        }
+        
+        class SortByShipDraft implements Comparator<Ship> {
+            public int compare(Ship a, Ship b) {
+            	return Double.compare(a.getDraft(), b.getDraft());
+            }
+        }
+        
+        class SortByShipLength implements Comparator<Ship> {
+            public int compare(Ship a, Ship b) {
+            	return Double.compare(a.getLength(), b.getLength());
+            }
+        }
+         
+//        class SortName implements Comparator<Entry<Integer, Integer>> {
+//            public int compare(Entry<Integer, Integer> a, Entry<Integer, Integer> b, boolean asc) {
+//                return a.name.compareTo(b.name);
+//            }
+//        }
+        		
 		class SearchButtonListener extends MouseAdapter {
 			public void mouseClicked(MouseEvent event) {
 				if(textAreaField.getText().isEmpty()) {
 					displayMessage("Search", "Please choose a file to search");
 				}else {
-					String fieldName = searchDropdown.getSelectedItem().toString();
+					String fieldName = searchOptionDropdown.getSelectedItem().toString();
 					String target = searchField.getText();
 					ArrayList<String> searchResults = searchWorld(fieldName, target);
 					
@@ -267,7 +396,7 @@ public class SeaPortProgram extends JFrame {
 				}				
 			}
 		}
-		
+				
 		// the next 5 methods below are utility methods that search and accumulate the results in an arraylist
 		private ArrayList<String> searchWorld(String fieldName, String target) {
 			switch(fieldName) {

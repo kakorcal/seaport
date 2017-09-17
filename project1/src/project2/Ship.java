@@ -23,6 +23,14 @@ public class Ship extends Thing {
 	public String toString() {
 		return super.toString();
 	}
+	
+	public String getShipDimensions() {
+		String st = "  Weight: " + weight + "\n";
+		st += "  Length: " + length + "\n";
+		st += "  Draft: " + draft + "\n";
+		st += "  Width: " + width + "\n";
+		return st;
+	}
 
 	public PortTime getArrivalTime() {
 		return arrivalTime;
