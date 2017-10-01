@@ -84,35 +84,7 @@ public class World extends Thing {
 				shipTypeNode.add(new DefaultMutableTreeNode(ship.getLength()));
 				shipTypeNode.add(new DefaultMutableTreeNode(ship.getWeight()));
 				shipTypeNode.add(new DefaultMutableTreeNode(ship.getWidth()));
-								
-				shipNode.add(shipTypeNode);
-				ArrayList<Job> jobs = ship.getJobs();
-				if(!jobs.isEmpty()) {
-					DefaultMutableTreeNode jobsNode = new DefaultMutableTreeNode("Jobs");
-					
-					for(Job job: jobs) {
-						DefaultMutableTreeNode jobNode = new DefaultMutableTreeNode(job.getName());
-						jobNode.add(new DefaultMutableTreeNode(job.getName()));
-						jobNode.add(new DefaultMutableTreeNode("Index: " + job.getIndex()));
-						jobNode.add(new DefaultMutableTreeNode("Parent: " + job.getParent()));
-						jobNode.add(new DefaultMutableTreeNode(job.getDuration()));
-						
-						ArrayList<String> requirements = job.getRequirements();
-						if(!requirements.isEmpty()) {
-							String st = "";
-							for(String requirement: requirements) {
-								st += requirement + " ";
-							}
-							
-							jobNode.add(new DefaultMutableTreeNode(st));
-						}
-						
-						jobsNode.add(jobNode);
-					}
-					
-					shipNode.add(jobsNode);
-				}
-				
+				shipNode.add(shipTypeNode);				
 				dockNode.add(shipNode);
 				docksNode.add(dockNode);
 			}
@@ -141,6 +113,34 @@ public class World extends Thing {
 				shipTypeNode.add(new DefaultMutableTreeNode(ship.getLength()));
 				shipTypeNode.add(new DefaultMutableTreeNode(ship.getWeight()));
 				shipTypeNode.add(new DefaultMutableTreeNode(ship.getWidth()));
+				
+				ArrayList<Job> jobs = ship.getJobs();
+				if(!jobs.isEmpty()) {
+					DefaultMutableTreeNode jobsNode = new DefaultMutableTreeNode("Jobs");
+					
+					for(Job job: jobs) {
+						DefaultMutableTreeNode jobNode = new DefaultMutableTreeNode(job.getName());
+						jobNode.add(new DefaultMutableTreeNode(job.getName()));
+						jobNode.add(new DefaultMutableTreeNode("Index: " + job.getIndex()));
+						jobNode.add(new DefaultMutableTreeNode("Parent: " + job.getParent()));
+						jobNode.add(new DefaultMutableTreeNode(job.getDuration()));
+						
+						ArrayList<String> requirements = job.getRequirements();
+						if(!requirements.isEmpty()) {
+							String st = "";
+							for(String requirement: requirements) {
+								st += requirement + " ";
+							}
+							
+							jobNode.add(new DefaultMutableTreeNode(st));
+						}
+						
+						jobsNode.add(jobNode);
+					}
+					
+					shipTypeNode.add(jobsNode);
+				}
+				
 				shipsNode.add(shipTypeNode);
 			}
 			

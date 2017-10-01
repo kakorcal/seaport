@@ -20,13 +20,6 @@ public class SeaPort extends Thing {
 	    for (Dock md: docks.values()) {
 	    	st += "\n  " + md.toString();
 	    	st += "\n    Ship: " + md.getShip().toString();
-	    	ArrayList<Job> jobs = md.getShip().getJobs();
-	    	
-	    	if(!jobs.isEmpty()) {
-	    		for(Job mj: jobs) {
-	    			st += "\n      " + mj.toString();	    			
-	    		}
-	    	}
 	    }
 	    
 	    st += "\n\n  --- List of all ships in que:";
