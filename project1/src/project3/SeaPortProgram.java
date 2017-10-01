@@ -1,6 +1,5 @@
 package project3;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -24,12 +23,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTree;
-import javax.swing.SwingConstants;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
@@ -118,6 +115,7 @@ public class SeaPortProgram extends JFrame {
 	    private DefaultTreeModel treeModel;
 	    
 	    private JScrollPane jobProgressScrollPane;
+	    private JPanel jobsContainer = new JPanel();
 
 		public MainPanel() {
 			
@@ -216,58 +214,10 @@ public class SeaPortProgram extends JFrame {
 			 * Job progress area
 			 * */
 			JPanel jobProgressAreaPanel = new JPanel();
-			JPanel temp = new JPanel();
-			
-//			JPanel row1 = new JPanel();
-//			JProgressBar bar1 = new JProgressBar();
-//			JPanel c1 = new JPanel();
-//			JPanel c2 = new JPanel();
-//			JPanel c3 = new JPanel();
-//			JPanel c4 = new JPanel();
-//			JPanel c5 = new JPanel();
-//
-//			c1.add(bar1);
-//			c2.add(new JLabel("Lela"));
-//			c3.add(new JLabel("Get Helppp"), BorderLayout.SOUTH);
-//			c4.add(new JButton("Done"));
-//			c5.add(new JButton("Cancel"));
-//			
-//			JPanel row2 = new JPanel();
-//			JProgressBar bar2 = new JProgressBar();
-//			JPanel d1 = new JPanel();
-//			JPanel d2 = new JPanel();
-//			JPanel d3 = new JPanel();
-//			JPanel d4 = new JPanel();
-//			JPanel d5 = new JPanel();
-//			
-//			d1.add(bar2);
-//			d2.add(new JLabel("Lela"));
-//			d3.add(new JLabel("Get Help"));
-//			d4.add(new JButton("Done"));
-//			d5.add(new JButton("Cancel"));
-//			
-//			bar1.setValue(30);
-//			row1.add(c1);
-//			row1.add(c2);
-//			row1.add(c3);
-//			row1.add(c4);
-//			row1.add(c5);
-//			row1.setLayout(new GridLayout(0, 5));
-//			temp.add(row1);
-//			
-//			bar2.setValue(40);
-//			row2.add(d1);
-//			row2.add(d2);
-//			row2.add(d3);
-//			row2.add(d4);
-//			row2.add(d5);
-//			row2.setLayout(new GridLayout(0, 5));
-//			temp.add(row2);
-//			
-//			temp.setLayout(new BoxLayout(temp, BoxLayout.Y_AXIS));
-			jobProgressScrollPane = new JScrollPane(temp, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			jobsContainer.setLayout(new BoxLayout(jobsContainer, BoxLayout.Y_AXIS));
+			jobProgressScrollPane = new JScrollPane(jobsContainer, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 			jobProgressScrollPane.setPreferredSize(new Dimension(getWidth(), 180));
-			jobProgressScrollPane.setViewportView(temp);
+			jobProgressScrollPane.setViewportView(jobsContainer);
 			jobProgressAreaPanel.add(jobProgressScrollPane);
 			jobProgressAreaPanel.setLayout(new GridLayout());
 			
@@ -325,7 +275,7 @@ public class SeaPortProgram extends JFrame {
 					Scanner sc = new Scanner(file);
 					
 					while(sc.hasNextLine()) {
-						world.process(sc.nextLine());
+						world.process(sc.nextLine(), jobsContainer);
 					}
 					
 					sc.close();
@@ -339,9 +289,13 @@ public class SeaPortProgram extends JFrame {
 					
 					root.removeAllChildren();
 					treeModel.reload(root);
+					
+					jobsContainer.removeAll();
 				}
 			}catch(Exception e) {
 				textAreaField.setText("Failed to process file");
+				root.removeAllChildren();
+				jobsContainer.removeAll();
 				e.printStackTrace();
 			}
 		}

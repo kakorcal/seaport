@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
+import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 public class World extends Thing {
@@ -15,7 +16,7 @@ public class World extends Thing {
 	}
 	
 	// parses the line of string into individual class members
-	public void process(String st) {
+	public void process(String st, JPanel jobsContainer) {
 		System.out.println("Processing > " + st);
 		
 	    Scanner sc = new Scanner(st);
@@ -43,7 +44,7 @@ public class World extends Thing {
 	    		assignPerson(new Person(sc), ports);
 	    		break;
 	    	case "job":
-	    		assignJob(new Job(sc), ports);
+	    		assignJob(new Job(sc, jobsContainer), ports);
 	    		break;
 	        default:
 	        	break;
