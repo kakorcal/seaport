@@ -28,6 +28,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 
 /*
  * File: SeaPortProgram.java
@@ -55,7 +56,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public class SeaPortProgram extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private static final int WIDTH = 735;
+	private static final int WIDTH = 740;
 	private static final int HEIGHT = 610;
 	
 	public static void main(String[] args) {
@@ -110,6 +111,8 @@ public class SeaPortProgram extends JFrame {
 	    
 	    private JTree tree;
 	    private JScrollPane treeAreaScrollPane;
+	    private DefaultMutableTreeNode root = new DefaultMutableTreeNode("Root");
+	    private DefaultTreeModel treeModel;
 	    
 	    private JScrollPane jobProgressScrollPane;
 
@@ -198,9 +201,9 @@ public class SeaPortProgram extends JFrame {
 			 * Tree area
 			 * */
 			JPanel treeAreaPanel = new JPanel();
-			DefaultMutableTreeNode root = new DefaultMutableTreeNode("Root");
 	        tree = new JTree(root);
 	        tree.setRootVisible(false);
+	        treeModel = (DefaultTreeModel) tree.getModel();
 	        treeAreaScrollPane = new JScrollPane(tree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	        treeAreaScrollPane.setPreferredSize(new Dimension(getWidth(), 180));
 	        treeAreaPanel.add(treeAreaScrollPane);
@@ -254,7 +257,6 @@ public class SeaPortProgram extends JFrame {
 			add(container);
 		}
 		
-		
 		// displays search and sort results in separate dialog box
 		private void displayMessage(String title, String message) {
 			JTextArea textArea = new JTextArea(message);
@@ -283,6 +285,10 @@ public class SeaPortProgram extends JFrame {
 					
 					sc.close();
 					textAreaField.setText(world.toString());
+					
+					root.removeAllChildren();
+					world.toTree(root);
+					treeModel.reload(root);
 				}else {
 					textAreaField.setText("No file was selected");
 				}

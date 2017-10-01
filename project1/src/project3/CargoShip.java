@@ -17,6 +17,10 @@ public class CargoShip extends Ship {
 	public String toString() {
 		return "Cargo Ship: " + super.toString();
 	}
+	
+	public String shipType() {
+		return "Cargo Ship";
+	}
 
 	public double getCargoValue() {
 		return cargoValue;

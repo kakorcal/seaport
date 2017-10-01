@@ -24,6 +24,10 @@ public class Ship extends Thing {
 		return super.toString();
 	}
 	
+	public String shipType() {
+		return "Ship";
+	}
+	
 	public String getShipDimensions() {
 		String st = "  Weight: " + weight + "\n";
 		st += "  Length: " + length + "\n";
