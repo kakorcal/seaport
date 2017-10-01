@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 public class Dock extends Thing {
 	private Ship ship;
+	boolean busyFlag = false;
 	
 	public Dock(Scanner sc) {
 		super(sc);

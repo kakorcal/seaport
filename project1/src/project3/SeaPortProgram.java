@@ -57,7 +57,7 @@ public class SeaPortProgram extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private static final int WIDTH = 740;
-	private static final int HEIGHT = 610;
+	private static final int HEIGHT = 740;
 	
 	public static void main(String[] args) {
 		SeaPortProgram app = new SeaPortProgram();
@@ -216,7 +216,7 @@ public class SeaPortProgram extends JFrame {
 			JPanel jobProgressAreaPanel = new JPanel();
 			jobsContainer.setLayout(new BoxLayout(jobsContainer, BoxLayout.Y_AXIS));
 			jobProgressScrollPane = new JScrollPane(jobsContainer, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-			jobProgressScrollPane.setPreferredSize(new Dimension(getWidth(), 180));
+			jobProgressScrollPane.setPreferredSize(new Dimension(getWidth(), 310));
 			jobProgressScrollPane.setViewportView(jobsContainer);
 			jobProgressAreaPanel.add(jobProgressScrollPane);
 			jobProgressAreaPanel.setLayout(new GridLayout());

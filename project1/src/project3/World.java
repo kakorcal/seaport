@@ -44,7 +44,7 @@ public class World extends Thing {
 	    		assignPerson(new Person(sc), ports);
 	    		break;
 	    	case "job":
-	    		assignJob(new Job(sc, jobsContainer), ports);
+	    		assignJob(new Job(sc, jobsContainer, this), ports);
 	    		break;
 	        default:
 	        	break;

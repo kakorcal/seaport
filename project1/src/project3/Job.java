@@ -1,11 +1,11 @@
 package project3;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -15,12 +15,13 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 
-public class Job extends Thing {
+public class Job extends Thing implements Runnable {
 	static Random random = new Random();
 	private JPanel parent;
 	private double duration;
 	private ArrayList<String> requirements = new ArrayList<String>();
 	
+	private Dock dock;
 	private JProgressBar pm = new JProgressBar();
     private boolean goFlag = true;
     private boolean noKillFlag = true;
@@ -30,7 +31,7 @@ public class Job extends Thing {
 	
 	enum Status {RUNNING, SUSPENDED, WAITING, DONE};
 	
-	public Job(Scanner sc, JPanel parent) {
+	public Job(Scanner sc, JPanel jobsContainer, World world) {
 		super(sc);
 		this.duration = sc.nextDouble();
 		
@@ -38,16 +39,39 @@ public class Job extends Thing {
 			requirements.add(sc.next());
 		}
 		
-		this.parent = parent;
+		this.parent = jobsContainer;
+		
+		HashMap<Integer, SeaPort> ports = world.getPorts();		
+		Ship ship = null;
+		for(Integer key: ports.keySet()) {
+			SeaPort port = ports.get(key);
+			HashMap<Integer, Ship> ships = port.getShips();
+			ship = world.getShipByIndex(this.getParent(), ships);
+			if(ship != null) break;			
+		}
+		
+		for(Integer key: ports.keySet()) {
+			SeaPort port = ports.get(key);
+			HashMap<Integer, Dock> docks = port.getDocks();
+			
+			if(ship != null) {
+				dock = world.getDockByIndex(ship.getParent(), docks);				
+			}else {
+				dock = world.getDockByIndex(this.getParent(), docks);				
+			}
+			if(dock != null) break;			
+		}
 		
 		JPanel child = new JPanel();		
 	    pm = new JProgressBar();
 	    pm.setStringPainted(true);
 	   
 	    child.add(pm);
-	    child.add(new JLabel(this.getName() + " " + "Hello", SwingConstants.CENTER));
+	    child.add(new JLabel(this.getName(), SwingConstants.CENTER));
 	    child.add(jbGo);
 	    child.add(jbKill);
+	    jbGo.setOpaque(true);
+	    jbKill.setOpaque(true);
 	    child.setLayout(new GridLayout(0, 4));
 	    parent.add(child);
 	    parent.revalidate();
@@ -64,18 +88,17 @@ public class Job extends Thing {
 		    }
 		});
 		
-//		new Thread(this).start();
+		new Thread(this).start();
 	}
 	
 	public void toggleGoFlag () {
-		System.out.println("toggleGoFlag");
 		goFlag = !goFlag;
 	}
 		  
 	public void setKillFlag () {
-		System.out.println("setKillFlag");
 		noKillFlag = false;
 		jbKill.setBackground(Color.red);
+		parent.revalidate();
 	}
 	
 	void showStatus (Status st) {
@@ -91,59 +114,57 @@ public class Job extends Thing {
 		        break;
 		    case WAITING:
 		        jbGo.setBackground(Color.orange);
-		        jbGo.setText("Waiting turn");
+		        jbGo.setText("Waiting Turn");
 		        break;
 		    case DONE:
 		        jbGo.setBackground(Color.red);
 		        jbGo.setText("Done");
 		        break;
 		}
+		parent.revalidate();
 	}
 	
-//	public void run() {
-//	    long time = System.currentTimeMillis();
-//	    long startTime = time;
-//	    long stopTime = (long) (time + duration);
-//	    
-//	    // get the ship
-//	    
-//	    // do the job
-//	    
-//	    // release the ship
-//	    
-//	    synchronized(worker.party) {
-//	    	while(worker.busyFlag) {
-//	    		showStatus(Status.WAITING);
-//		        try {
-//		          worker.party.wait();
-//		        }
-//		        catch(InterruptedException e) {}
-//		    }
-//		    worker.busyFlag = true;
-//	    }
-//
-//		while(time < stopTime && noKillFlag) {
-//			try {
-//				Thread.sleep(100);
-//		    } catch(InterruptedException e) {}
-//		      
-//		    if(goFlag) {
-//		    	showStatus(Status.RUNNING);
-//		        time += 100;
-//		        pm.setValue((int)(((time - startTime) / duration) * 100));
-//		    } else {
-//		        showStatus (Status.SUSPENDED);
-//		    }
-//		}
-//
-//		pm.setValue(100);
-//		showStatus(Status.DONE);
-//		    
-//		synchronized(worker.party) {
-//			worker.busyFlag = false; 
-//		    worker.party.notifyAll();
-//		}
-//	}	
+	public void run() {
+	    long time = System.currentTimeMillis();
+	    long startTime = time;
+	    long stopTime = (long) (time + duration);
+	    
+	    // get access to the dock 
+	    synchronized(dock) {
+	    	while(dock.busyFlag) {
+	    		showStatus(Status.WAITING);
+	    		try {
+	    			dock.wait();
+	    		}
+	    		catch(InterruptedException e) {}
+	    	}
+	    	dock.busyFlag = true;
+	    }
+	    
+	    // do the job
+	    while(time < stopTime && noKillFlag) {
+	    	try {
+	    		Thread.sleep(1000);
+	    	} catch(InterruptedException e) {}
+	    	
+	    	if(goFlag) {
+	    		showStatus(Status.RUNNING);
+	    		time += 10;
+	    		pm.setValue((int)(((time - startTime) / duration) * 100));
+	    	} else {
+	    		showStatus(Status.SUSPENDED);
+	    	}
+	    }
+	    
+	    pm.setValue(100);
+	    showStatus(Status.DONE);
+	    
+	    // release the ship
+	    synchronized(dock) {
+	    	dock.busyFlag = false; 
+	    	dock.notifyAll();
+	    }		    
+	}	
 
 	public String toString() {
 		String st = "Job: " + super.toString();
