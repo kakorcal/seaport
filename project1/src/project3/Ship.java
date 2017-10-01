@@ -10,7 +10,7 @@ public class Ship extends Thing {
 	private double length;
 	private double weight;
 	private double width;
-	private ArrayList<Job> jobs;
+	private ArrayList<Job> jobs = new ArrayList<Job>();
 	
 	public Ship(Scanner sc) {
 		super(sc);

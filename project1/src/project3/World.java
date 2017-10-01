@@ -1,5 +1,6 @@
 package project3;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -41,6 +42,9 @@ public class World extends Thing {
 	    	case "person":
 	    		assignPerson(new Person(sc), ports);
 	    		break;
+	    	case "job":
+	    		assignJob(new Job(sc), ports);
+	    		break;
 	        default:
 	        	break;
 	    }
@@ -61,7 +65,7 @@ public class World extends Thing {
 			DefaultMutableTreeNode shipsNode = new DefaultMutableTreeNode("Ships");
 			DefaultMutableTreeNode personsNode = new DefaultMutableTreeNode("Persons");
 			portNode.add(new DefaultMutableTreeNode(port.getName()));
-			portNode.add(new DefaultMutableTreeNode(port.getIndex()));
+			portNode.add(new DefaultMutableTreeNode("Index: " + port.getIndex()));
 			
 			for(Integer dockKey: docks.keySet()) {
 				Dock dock = docks.get(dockKey);
@@ -69,16 +73,46 @@ public class World extends Thing {
 				
 				DefaultMutableTreeNode dockNode = new DefaultMutableTreeNode(dock.getName());
 				dockNode.add(new DefaultMutableTreeNode(dock.getName()));
-				dockNode.add(new DefaultMutableTreeNode(dock.getIndex()));
+				dockNode.add(new DefaultMutableTreeNode("Index: " + dock.getIndex()));
+				dockNode.add(new DefaultMutableTreeNode("Parent: " + dock.getParent()));
 				DefaultMutableTreeNode shipNode = new DefaultMutableTreeNode("Ship");
 				DefaultMutableTreeNode shipTypeNode = new DefaultMutableTreeNode(ship.shipType());
 				shipTypeNode.add(new DefaultMutableTreeNode(ship.getName()));
-				shipTypeNode.add(new DefaultMutableTreeNode(ship.getIndex()));
+				shipTypeNode.add(new DefaultMutableTreeNode("Index: " + ship.getIndex()));
+				shipTypeNode.add(new DefaultMutableTreeNode("Parent: " + ship.getParent()));
 				shipTypeNode.add(new DefaultMutableTreeNode(ship.getDraft()));
 				shipTypeNode.add(new DefaultMutableTreeNode(ship.getLength()));
 				shipTypeNode.add(new DefaultMutableTreeNode(ship.getWeight()));
 				shipTypeNode.add(new DefaultMutableTreeNode(ship.getWidth()));
+								
 				shipNode.add(shipTypeNode);
+				ArrayList<Job> jobs = ship.getJobs();
+				if(!jobs.isEmpty()) {
+					DefaultMutableTreeNode jobsNode = new DefaultMutableTreeNode("Jobs");
+					
+					for(Job job: jobs) {
+						DefaultMutableTreeNode jobNode = new DefaultMutableTreeNode(job.getName());
+						jobNode.add(new DefaultMutableTreeNode(job.getName()));
+						jobNode.add(new DefaultMutableTreeNode("Index: " + job.getIndex()));
+						jobNode.add(new DefaultMutableTreeNode("Parent: " + job.getParent()));
+						jobNode.add(new DefaultMutableTreeNode(job.getDuration()));
+						
+						ArrayList<String> requirements = job.getRequirements();
+						if(!requirements.isEmpty()) {
+							String st = "";
+							for(String requirement: requirements) {
+								st += requirement + " ";
+							}
+							
+							jobNode.add(new DefaultMutableTreeNode(st));
+						}
+						
+						jobsNode.add(jobNode);
+					}
+					
+					shipNode.add(jobsNode);
+				}
+				
 				dockNode.add(shipNode);
 				docksNode.add(dockNode);
 			}
@@ -87,7 +121,8 @@ public class World extends Thing {
 				Ship ship = ques.get(queKey);
 				DefaultMutableTreeNode shipNode = new DefaultMutableTreeNode(ship.getName());
 				shipNode.add(new DefaultMutableTreeNode(ship.getName()));
-				shipNode.add(new DefaultMutableTreeNode(ship.getIndex()));
+				shipNode.add(new DefaultMutableTreeNode("Index: " + ship.getIndex()));
+				shipNode.add(new DefaultMutableTreeNode("Parent: " + ship.getParent()));
 				shipNode.add(new DefaultMutableTreeNode(ship.getDraft()));
 				shipNode.add(new DefaultMutableTreeNode(ship.getLength()));
 				shipNode.add(new DefaultMutableTreeNode(ship.getWeight()));
@@ -100,7 +135,8 @@ public class World extends Thing {
 				DefaultMutableTreeNode shipTypeNode = new DefaultMutableTreeNode(ship.getName());
 				shipTypeNode.add(new DefaultMutableTreeNode(ship.shipType()));
 				shipTypeNode.add(new DefaultMutableTreeNode(ship.getName()));
-				shipTypeNode.add(new DefaultMutableTreeNode(ship.getIndex()));
+				shipTypeNode.add(new DefaultMutableTreeNode("Index: " + ship.getIndex()));
+				shipTypeNode.add(new DefaultMutableTreeNode("Parent: " + ship.getParent()));
 				shipTypeNode.add(new DefaultMutableTreeNode(ship.getDraft()));
 				shipTypeNode.add(new DefaultMutableTreeNode(ship.getLength()));
 				shipTypeNode.add(new DefaultMutableTreeNode(ship.getWeight()));
@@ -112,7 +148,8 @@ public class World extends Thing {
 				Person person = persons.get(personKey);
 				DefaultMutableTreeNode personNode = new DefaultMutableTreeNode(person.getName());
 				personNode.add(new DefaultMutableTreeNode(person.getName()));
-				personNode.add(new DefaultMutableTreeNode(person.getIndex()));
+				personNode.add(new DefaultMutableTreeNode("Index: " + person.getIndex()));
+				personNode.add(new DefaultMutableTreeNode("Parent: " + person.getParent()));
 				personNode.add(new DefaultMutableTreeNode(person.getSkill()));
 				personsNode.add(personNode);
 			}
@@ -170,6 +207,35 @@ public class World extends Thing {
 	public void assignPerson(Person person, HashMap<Integer, SeaPort> ports) {
 		getSeaPortByIndex(person.getParent(), ports).getPersons().put(person.getIndex(), person);
 	}
+	
+	public void assignJob(Job job, HashMap<Integer, SeaPort> ports) {
+		// need to find dock, get the ship, add job to ship
+		Dock dock = null;
+		
+		for(Integer key: ports.keySet()) {
+			SeaPort port = ports.get(key);
+			HashMap<Integer, Dock> docks = port.getDocks();
+			dock = getDockByIndex(job.getParent(), docks);
+			if(dock != null) break;			
+		}
+		
+		if(dock != null) {
+			dock.getShip().getJobs().add(job);
+		}else {
+			Ship ship = null;
+			
+			for(Integer key: ports.keySet()) {
+				SeaPort port = ports.get(key);
+				HashMap<Integer, Ship> ships = port.getShips();
+				ship = getShipByIndex(job.getParent(), ships);
+				if(ship != null) break;			
+			}
+			
+			if(ship != null) {
+				ship.getJobs().add(job);
+			}
+		}
+	} 
 
 	public String toString() {
 		String st = ">>>>> The world:";

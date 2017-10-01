@@ -5,14 +5,27 @@ import java.util.Scanner;
 
 public class Job extends Thing {
 	private double duration;
-	private ArrayList<String> requirements;
+	private ArrayList<String> requirements = new ArrayList<String>();
 	
 	public Job(Scanner sc) {
 		super(sc);
+		this.duration = sc.nextDouble();
+		
+		while(sc.hasNext()) {
+			requirements.add(sc.next());
+		}		
 	}
 
 	public String toString() {
-		return "";
+		String st = "Job: " + super.toString();
+		
+		if(!requirements.isEmpty()) {
+			for(int i = 0; i < requirements.size(); i++) {
+				st += " " + requirements.get(i);
+			}
+		}
+		
+		return st;
 	}
 
 	public double getDuration() {
