@@ -60,8 +60,8 @@ import javax.swing.tree.DefaultTreeModel;
 public class SeaPortProgram extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private static final int WIDTH = 1100;
-	private static final int HEIGHT = 700;
+//	private static final int WIDTH = 1100;
+//	private static final int HEIGHT = 700;
 	
 	public static void main(String[] args) {
 		SeaPortProgram app = new SeaPortProgram();
@@ -70,7 +70,7 @@ public class SeaPortProgram extends JFrame {
 
 	public SeaPortProgram() {
 		super("Sea Port Program");
-		setFrame(WIDTH, HEIGHT);
+		setFrame();
 		add(new MainPanel());
 	}
 
@@ -78,8 +78,9 @@ public class SeaPortProgram extends JFrame {
 		setVisible(true);
 	}
 
-	private void setFrame(int width, int height) {
-		setSize(width, height);
+	private void setFrame() {
+		//setSize(WIDTH, HEIGHT);
+		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
@@ -139,12 +140,12 @@ public class SeaPortProgram extends JFrame {
 			textAreaPanel.add(textAreaScrollPane);
 			textAreaPanel.add(buttonPanel);
 			textAreaPanel.setLayout(new BoxLayout(textAreaPanel, BoxLayout.Y_AXIS));
+			textAreaPanel.setMinimumSize(new Dimension(325, this.getHeight()));
 			
-			
-			JPanel filterAreaPanel = new JPanel();
 			/*
 			 * Search area
 			 * */
+			JPanel filterAreaPanel = new JPanel();
 			JPanel searchAreaPanel = new JPanel();
 			JPanel searchFieldPanel = new JPanel();
 			JPanel searchDropdownPanel = new JPanel();
@@ -201,9 +202,9 @@ public class SeaPortProgram extends JFrame {
 			filterAreaPanel.add(sortAreaPanel);
 			filterAreaPanel.setLayout(new BoxLayout(filterAreaPanel, BoxLayout.Y_AXIS));
 			
+			
 			/*
 			 * Tree area
-			 * 
 			 * */
 			
 	        tree = new JTree(root);
@@ -218,12 +219,12 @@ public class SeaPortProgram extends JFrame {
 	        tree.setBackground(this.getBackground());
 	        treeScrollPane = new JScrollPane(tree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	        treeScrollPane.setPreferredSize(new Dimension(275, this.getHeight()));
+	        treeScrollPane.setMinimumSize(new Dimension(275, this.getHeight()));
 	        treeScrollPane.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 	        
 	        
 	        /*
 	         * Job Threads
-	         * 
 	         * */
 	        JPanel jobPanel = new JPanel();
 	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
