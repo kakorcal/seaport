@@ -10,7 +10,7 @@ public class Ship extends Thing {
 	private double length;
 	private double weight;
 	private double width;
-	private ArrayList<Job> jobs = new ArrayList<Job>();
+	private ArrayList<Job> jobs;
 	
 	public Ship(Scanner sc) {
 		super(sc);
@@ -22,10 +22,6 @@ public class Ship extends Thing {
 
 	public String toString() {
 		return super.toString();
-	}
-	
-	public String shipType() {
-		return "Ship";
 	}
 	
 	public String getShipDimensions() {

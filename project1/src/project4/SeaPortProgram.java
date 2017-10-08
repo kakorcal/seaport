@@ -26,9 +26,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 
 /*
  * File: SeaPortProgram.java
@@ -48,16 +45,13 @@ import javax.swing.tree.DefaultTreeModel;
  * 		you can create structure of found items as a return value
  * 5. use HashMaps instead of ArrayLists
  * 6. add sort capabilities (width, weight, draft, length, name)
- * 7. extend Project 2 to use the Swing class JTree effectively to display the contents of the data file
- * 8. create a thread for each job, cannot run until a ship has a dock, create a GUI to show the progress of each job.
- * 
  * */
 
 public class SeaPortProgram extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private static final int WIDTH = 740;
-	private static final int HEIGHT = 740;
+	private static final int HEIGHT = 250;
 	
 	public static void main(String[] args) {
 		SeaPortProgram app = new SeaPortProgram();
@@ -108,14 +102,6 @@ public class SeaPortProgram extends JFrame {
 		private JButton sortButton = new JButton("Sort");
 	    private JComboBox<String> sortOrderDropdown;
 	    private JComboBox<String> sortOptionDropdown;
-	    
-	    private JTree tree;
-	    private JScrollPane treeAreaScrollPane;
-	    private DefaultMutableTreeNode root = new DefaultMutableTreeNode("Root");
-	    private DefaultTreeModel treeModel;
-	    
-	    private JScrollPane jobProgressScrollPane;
-	    private JPanel jobsContainer = new JPanel();
 
 		public MainPanel() {
 			
@@ -131,17 +117,18 @@ public class SeaPortProgram extends JFrame {
 			JPanel textAreaPanel = new JPanel();
 			JPanel buttonPanel = new JPanel();
 			buttonPanel.add(newFileButton);
-			buttonPanel.setLayout(new GridLayout());
+			buttonPanel.setLayout(new GridLayout(1, 0));
 			textAreaField.setEditable(false);
 			textAreaField.setBackground(getBackground());
 			textAreaPanel.add(textAreaScrollPane);
 			textAreaPanel.add(buttonPanel);
 			textAreaPanel.setLayout(new BoxLayout(textAreaPanel, BoxLayout.Y_AXIS));
 			
+			
+			JPanel filterAreaPanel = new JPanel();
 			/*
 			 * Search area
 			 * */
-			JPanel filterAreaPanel = new JPanel();
 			JPanel searchAreaPanel = new JPanel();
 			JPanel searchFieldPanel = new JPanel();
 			JPanel searchDropdownPanel = new JPanel();
@@ -199,29 +186,6 @@ public class SeaPortProgram extends JFrame {
 			filterAreaPanel.setLayout(new BoxLayout(filterAreaPanel, BoxLayout.Y_AXIS));
 			
 			/*
-			 * Tree area
-			 * */
-			JPanel treeAreaPanel = new JPanel();
-	        tree = new JTree(root);
-	        tree.setRootVisible(false);
-	        treeModel = (DefaultTreeModel) tree.getModel();
-	        treeAreaScrollPane = new JScrollPane(tree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-	        treeAreaScrollPane.setPreferredSize(new Dimension(getWidth(), 180));
-	        treeAreaPanel.add(treeAreaScrollPane);
-			treeAreaPanel.setLayout(new GridLayout());		
-			
-			/*
-			 * Job progress area
-			 * */
-			JPanel jobProgressAreaPanel = new JPanel();
-			jobsContainer.setLayout(new BoxLayout(jobsContainer, BoxLayout.Y_AXIS));
-			jobProgressScrollPane = new JScrollPane(jobsContainer, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-			jobProgressScrollPane.setPreferredSize(new Dimension(getWidth(), 310));
-			jobProgressScrollPane.setViewportView(jobsContainer);
-			jobProgressAreaPanel.add(jobProgressScrollPane);
-			jobProgressAreaPanel.setLayout(new GridLayout());
-			
-			/*
 			 * Event handlers
 			 * */
 		    FileButtonListener fileButtonListener = new FileButtonListener();
@@ -236,23 +200,16 @@ public class SeaPortProgram extends JFrame {
 			/*
 			 * Main Layout 
 			 * */
-			constraints.gridwidth = GridBagConstraints.REMAINDER; // end row
-			constraints.fill = GridBagConstraints.HORIZONTAL;
-			container.add(jobProgressAreaPanel, constraints);
-			constraints.gridwidth = 1;
-			constraints.fill = 1;
 		    constraints.anchor = GridBagConstraints.PAGE_START;
 		    constraints.insets = new Insets(3,0,0,10);
 			container.add(textAreaPanel, constraints);
 			constraints.insets = new Insets(0,0,0,0);
-			constraints.gridwidth = GridBagConstraints.REMAINDER;
 			container.add(filterAreaPanel, constraints);
-			constraints.fill = GridBagConstraints.HORIZONTAL;
-			container.add(treeAreaPanel, constraints);
 			add(container);
 		}
 		
-		// displays search and sort results in separate dialog box
+		
+		// displays search result in separate dialog box
 		private void displayMessage(String title, String message) {
 			JTextArea textArea = new JTextArea(message);
 			JScrollPane scrollPane = new JScrollPane(textArea);  
@@ -275,28 +232,16 @@ public class SeaPortProgram extends JFrame {
 					Scanner sc = new Scanner(file);
 					
 					while(sc.hasNextLine()) {
-						world.process(sc.nextLine(), jobsContainer);
+						world.process(sc.nextLine());
 					}
 					
 					sc.close();
 					textAreaField.setText(world.toString());
-					
-					root.removeAllChildren();
-					world.toTree(root);
-					treeModel.reload(root);
 				}else {
 					textAreaField.setText("No file was selected");
-					
-					root.removeAllChildren();
-					treeModel.reload(root);
-					
-					jobsContainer.removeAll();
 				}
 			}catch(Exception e) {
 				textAreaField.setText("Failed to process file");
-				root.removeAllChildren();
-				jobsContainer.removeAll();
-				e.printStackTrace();
 			}
 		}
 				
