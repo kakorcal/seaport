@@ -5,6 +5,8 @@ import java.util.Scanner;
 
 public class Ship extends Thing {
 	
+	public static final String CARGO = "Cargo";
+	public static final String PASSENGER = "Passenger";
 	private static final int MAX_PORT_INDEX = 19999;
 	private static final int MAX_DOCK_INDEX = 29999;
 	private int portIndex;
@@ -34,6 +36,10 @@ public class Ship extends Thing {
 
 	public String toString() {
 		return super.toString();
+	}
+	
+	public String shipType() {
+		return null;
 	}
 	
 	public int getPortIndex() {

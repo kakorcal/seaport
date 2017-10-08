@@ -202,23 +202,18 @@ public class SeaPortProgram extends JFrame {
 			filterAreaPanel.setLayout(new BoxLayout(filterAreaPanel, BoxLayout.Y_AXIS));
 			
 			/*
-			 * JTree
+			 * Tree area
 			 * 
 			 * */
 			
-			root.add(new DefaultMutableTreeNode("Foo"));
-			root.add(new DefaultMutableTreeNode("Bar"));
 	        tree = new JTree(root);
-	        tree.setRootVisible(true);
-	        //treeModel = (DefaultTreeModel) tree.getModel();
+	        tree.setRootVisible(false);
+	        treeModel = (DefaultTreeModel) tree.getModel();
 
 	        // https://stackoverflow.com/questions/14563433/jtree-set-background-of-node-to-non-opaque
 	        tree.setCellRenderer(new DefaultTreeCellRenderer() {
 				private static final long serialVersionUID = 1L;
-				
-			    @Override
 			    public Color getBackgroundNonSelectionColor() { return null; }
-
 	        });
 	        tree.setBackground(this.getBackground());
 	        treeScrollPane = new JScrollPane(tree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -227,7 +222,7 @@ public class SeaPortProgram extends JFrame {
 	        
 	        
 	        /*
-	         * Jobs
+	         * Job Threads
 	         * 
 	         * */
 	        JPanel jobPanel = new JPanel();
@@ -306,7 +301,6 @@ public class SeaPortProgram extends JFrame {
 	        jobPanel.add(new JLabel("Resources"));
 	        jobPanel.add(new JButton("Done"));
 	        jobPanel.add(new JButton("Cancel"));
-
 	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
 	        jobPanel.add(new JLabel("JOB_87_98_65"));
 	        jobPanel.add(new JLabel("Resources"));
@@ -333,13 +327,11 @@ public class SeaPortProgram extends JFrame {
 	        jobPanel.add(new JButton("Done"));
 	        jobPanel.add(new JButton("Cancel"));
 
-	        jobPanel.setLayout(new GridLayout(20, 5));
-	        
 	        JPanel temp = new JPanel();
 	        temp.setLayout(new GridLayout(20, 5));
-	        JScrollPane jobScrollPane = new JScrollPane(temp, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+	        jobPanel.setLayout(new GridLayout(20, 5));	        
+	        JScrollPane jobScrollPane = new JScrollPane(jobPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	        jobScrollPane.setPreferredSize(new Dimension(this.getWidth(), 460));
-			
 			
 			/*
 			 * Event handlers
@@ -361,7 +353,7 @@ public class SeaPortProgram extends JFrame {
 			constraints.weightx = 0.1;
 			constraints.gridx = 0;
 			constraints.gridy = 0;
-			// int top, int left, int bottom, int right
+			// top, left, bottom, right
 			constraints.insets = new Insets(2, 2, 1, 1);
 		    this.add(treeScrollPane, constraints);
 		    
@@ -403,8 +395,8 @@ public class SeaPortProgram extends JFrame {
 			try {
 				if(fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 					File file = fileChooser.getSelectedFile();
-					
 					Scanner sc = new Scanner(file);
+					world.setItems(new HashMap<Integer, Thing>());
 					
 					while(sc.hasNextLine()) {
 						world.process(sc.nextLine());
@@ -412,11 +404,18 @@ public class SeaPortProgram extends JFrame {
 					
 					sc.close();
 					textAreaField.setText(world.toString());
+					root.removeAllChildren();
+					world.toTree(root);
+					treeModel.reload(root);
 				}else {
 					textAreaField.setText("No file was selected");
+					root.removeAllChildren();
+					treeModel.reload(root);
 				}
 			}catch(Exception e) {
 				textAreaField.setText("Failed to process file");
+				root.removeAllChildren();
+				treeModel.reload(root);
 			}
 		}
 				

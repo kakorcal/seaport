@@ -1,7 +1,10 @@
 package project4;
 
 import java.util.HashMap;
+import java.util.Queue;
 import java.util.Scanner;
+
+import javax.swing.tree.DefaultMutableTreeNode;
 
 public class World extends Thing {
 	
@@ -52,15 +55,146 @@ public class World extends Thing {
 	    sc.close();
 	}
 	
+	public void toTree(DefaultMutableTreeNode root) {
+		for(int portKey: ports.keySet()) {
+			SeaPort port = ports.get(portKey);
+			HashMap<Integer, Dock> docks = port.getDocks();
+			Queue<Integer> queue = port.getQueue();
+			HashMap<Integer, Ship> ships = port.getShips();
+			HashMap<Integer, Person> persons = port.getPersons();
+			DefaultMutableTreeNode portNode = new DefaultMutableTreeNode("SeaPort " + port.getIndex());
+			DefaultMutableTreeNode docksNode = new DefaultMutableTreeNode("Docks");
+			DefaultMutableTreeNode queueNode = new DefaultMutableTreeNode("Queue");
+			DefaultMutableTreeNode shipsNode = new DefaultMutableTreeNode("Ships");
+			DefaultMutableTreeNode personsNode = new DefaultMutableTreeNode("Persons");
+			portNode.add(new DefaultMutableTreeNode("Name: " + port.getName()));
+			portNode.add(new DefaultMutableTreeNode("Index: " + port.getIndex()));
+			
+			for(int dockKey: docks.keySet()) {
+				Dock dock = docks.get(dockKey);
+				Ship ship = port.getShips().get(dock.getShipIndex());
+				
+				DefaultMutableTreeNode dockNode = new DefaultMutableTreeNode(dock.getName());
+				dockNode.add(new DefaultMutableTreeNode("Name: " + dock.getName()));
+				dockNode.add(new DefaultMutableTreeNode("Index: " + dock.getIndex()));
+				dockNode.add(new DefaultMutableTreeNode("Parent: " + dock.getParent()));
+				DefaultMutableTreeNode shipNode = new DefaultMutableTreeNode("Ship");
+				String shipType = ship.shipType();
+				DefaultMutableTreeNode shipTypeNode = new DefaultMutableTreeNode(shipType);
+				shipTypeNode.add(new DefaultMutableTreeNode("Name: " + ship.getName()));
+				shipTypeNode.add(new DefaultMutableTreeNode("Index: " + ship.getIndex()));
+				shipTypeNode.add(new DefaultMutableTreeNode("Parent: " + ship.getParent()));
+				shipTypeNode.add(new DefaultMutableTreeNode("Draft: " + ship.getDraft()));
+				shipTypeNode.add(new DefaultMutableTreeNode("Length: " + ship.getLength()));
+				shipTypeNode.add(new DefaultMutableTreeNode("Weight: " + ship.getWeight()));
+				shipTypeNode.add(new DefaultMutableTreeNode("Width: " + ship.getWidth()));
+				
+				if(shipType.equals(Ship.CARGO)) {
+					CargoShip cargoShip = (CargoShip) ship;
+					shipNode.add(new DefaultMutableTreeNode("Type: " + shipType));
+					shipTypeNode.add(new DefaultMutableTreeNode("Cargo value: " + cargoShip.getCargoValue()));
+					shipTypeNode.add(new DefaultMutableTreeNode("Cargo volume: " + cargoShip.getCargoVolume()));
+					shipTypeNode.add(new DefaultMutableTreeNode("Cargo weight: " + cargoShip.getCargoWeight()));
+				}else if(shipType.equals(Ship.PASSENGER)) {
+					PassengerShip passengerShip = (PassengerShip) ship;
+					shipNode.add(new DefaultMutableTreeNode("Type: " + shipType));
+					shipTypeNode.add(new DefaultMutableTreeNode("Number of occupied rooms: " + passengerShip.getNumberOfOccupiedRooms()));
+					shipTypeNode.add(new DefaultMutableTreeNode("Number of passengers: " + passengerShip.getNumberOfPassengers()));
+					shipTypeNode.add(new DefaultMutableTreeNode("Number of rooms: " + passengerShip.getNumberOfRooms()));
+				}
+				
+				shipNode.add(shipTypeNode);				
+				dockNode.add(shipNode);
+				docksNode.add(dockNode);
+			}
+			
+			for(int queueKey: queue) {
+				Ship ship = port.getShips().get(queueKey);
+				DefaultMutableTreeNode shipNode = new DefaultMutableTreeNode(ship.getName());
+				shipNode.add(new DefaultMutableTreeNode("Name: " + ship.getName()));
+				shipNode.add(new DefaultMutableTreeNode("Index: " + ship.getIndex()));
+				shipNode.add(new DefaultMutableTreeNode("Parent: " + ship.getParent()));
+				shipNode.add(new DefaultMutableTreeNode("Draft: " + ship.getDraft()));
+				shipNode.add(new DefaultMutableTreeNode("Length: " + ship.getLength()));
+				shipNode.add(new DefaultMutableTreeNode("Weight: " + ship.getWeight()));
+				shipNode.add(new DefaultMutableTreeNode("Width: " + ship.getWidth()));
+				
+				String shipType = ship.shipType();
+				if(shipType.equals(Ship.CARGO)) {
+					CargoShip cargoShip = (CargoShip) ship;
+					shipNode.add(new DefaultMutableTreeNode("Type: " + shipType));
+					shipNode.add(new DefaultMutableTreeNode("Cargo value: " + cargoShip.getCargoValue()));
+					shipNode.add(new DefaultMutableTreeNode("Cargo volume: " + cargoShip.getCargoVolume()));
+					shipNode.add(new DefaultMutableTreeNode("Cargo weight: " + cargoShip.getCargoWeight()));
+				}else if(shipType.equals(Ship.PASSENGER)) {
+					PassengerShip passengerShip = (PassengerShip) ship;
+					shipNode.add(new DefaultMutableTreeNode("Type: " + shipType));
+					shipNode.add(new DefaultMutableTreeNode("Number of occupied rooms: " + passengerShip.getNumberOfOccupiedRooms()));
+					shipNode.add(new DefaultMutableTreeNode("Number of passengers: " + passengerShip.getNumberOfPassengers()));
+					shipNode.add(new DefaultMutableTreeNode("Number of rooms: " + passengerShip.getNumberOfRooms()));
+				}
+				
+				queueNode.add(shipNode);
+			}
+			
+			for(int shipKey: ships.keySet()) {
+				Ship ship = ships.get(shipKey);
+				DefaultMutableTreeNode shipNode = new DefaultMutableTreeNode(ship.getName());
+				shipNode.add(new DefaultMutableTreeNode("Name: " + ship.getName()));
+				shipNode.add(new DefaultMutableTreeNode("Index: " + ship.getIndex()));
+				shipNode.add(new DefaultMutableTreeNode("Parent: " + ship.getParent()));
+				shipNode.add(new DefaultMutableTreeNode("Draft: " + ship.getDraft()));
+				shipNode.add(new DefaultMutableTreeNode("Length: " + ship.getLength()));
+				shipNode.add(new DefaultMutableTreeNode("Weight: " + ship.getWeight()));
+				shipNode.add(new DefaultMutableTreeNode("Width: " + ship.getWidth()));
+				
+				String shipType = ship.shipType();
+				if(shipType.equals(Ship.CARGO)) {
+					CargoShip cargoShip = (CargoShip) ship;
+					shipNode.add(new DefaultMutableTreeNode("Type: " + shipType));
+					shipNode.add(new DefaultMutableTreeNode("Cargo value: " + cargoShip.getCargoValue()));
+					shipNode.add(new DefaultMutableTreeNode("Cargo volume: " + cargoShip.getCargoVolume()));
+					shipNode.add(new DefaultMutableTreeNode("Cargo weight: " + cargoShip.getCargoWeight()));
+				}else if(shipType.equals(Ship.PASSENGER)) {
+					PassengerShip passengerShip = (PassengerShip) ship;
+					shipNode.add(new DefaultMutableTreeNode("Type: " + shipType));
+					shipNode.add(new DefaultMutableTreeNode("Number of occupied rooms: " + passengerShip.getNumberOfOccupiedRooms()));
+					shipNode.add(new DefaultMutableTreeNode("Number of passengers: " + passengerShip.getNumberOfPassengers()));
+					shipNode.add(new DefaultMutableTreeNode("Number of rooms: " + passengerShip.getNumberOfRooms()));
+				}
+				shipsNode.add(shipNode);
+			}
+			
+			for(int personKey: persons.keySet()) {
+				Person person = persons.get(personKey);
+				DefaultMutableTreeNode personNode = new DefaultMutableTreeNode(person.getName());
+				personNode.add(new DefaultMutableTreeNode("Name: " + person.getName()));
+				personNode.add(new DefaultMutableTreeNode("Index: " + person.getIndex()));
+				personNode.add(new DefaultMutableTreeNode("Parent: " + person.getParent()));
+				personNode.add(new DefaultMutableTreeNode("Skill: " + person.getSkill()));
+				personsNode.add(personNode);
+			}
+			
+			portNode.add(docksNode);
+			portNode.add(queueNode);
+			portNode.add(shipsNode);
+			portNode.add(personsNode);
+			root.add(portNode);
+		}
+	}
+	
+	// the get and add methods below are methods that help to create the data structure hierarchy
 	public void addPort(SeaPort port) {
 		ports.put(port.getIndex(), port);
 		items.put(port.getIndex(), port);
+		port.getItems().put(port.getIndex(), port);
 	}
 	
 	public void addDock(Dock dock) {
 		SeaPort port = ports.get(dock.getPortIndex());
 		port.getDocks().put(dock.getIndex(), dock);
 		items.put(dock.getIndex(), dock);
+		port.getItems().put(dock.getIndex(), dock);
 	}
 	
 	public void addShip(Ship ship) {
@@ -75,96 +209,57 @@ public class World extends Thing {
 			port = ports.get(dock.getParent());
 			port.getShips().put(ship.getIndex(), ship);
 		}
+		
 		items.put(ship.getIndex(), ship);
+		port.getItems().put(ship.getIndex(), ship);
 	}
 	
 	public void addPerson(Person person) {
 		SeaPort port = ports.get(person.getPortIndex());
 		port.getPersons().put(person.getIndex(), person);
 		items.put(person.getIndex(), person);
+		port.getItems().put(person.getIndex(), person);
 	}
 	
 	public void addJob(Job job) {
 		// need to find ship and add the job
 		Thing dock = items.get(job.getDockIndex());
+		SeaPort port = null;
 		
 		if(dock != null) {
 			// in this case, we will run the same jobs for every ship that goes to the dock
-			ports.get(dock.getParent())
-				 .getDocks()
-				 .get(dock.getIndex())
-				 .getJobs()
-				 .add(job);
+			port = ports.get(dock.getParent());
+			
+			port.getDocks()
+				.get(dock.getIndex())
+				.getJobs()
+				.add(job);
 		}else {
 			Thing ship = items.get(job.getShipIndex());
 			
 			int parent = ship.getParent();
 			if(parent <= MAX_PORT_INDEX) {
-				ports.get(parent)
-					 .getShips()
-					 .get(ship.getIndex())
-					 .getJobs()
-					 .add(job);
+				port = ports.get(parent);
+				
+			    port.getShips()
+					.get(ship.getIndex())
+					.getJobs()
+					.add(job);
 			}else if (parent > MAX_PORT_INDEX && parent <= MAX_DOCK_INDEX){
 				dock = items.get(parent);
+				port = ports.get(dock.getParent());
 				
-				ports.get(dock.getParent())
-					 .getShips()
-					 .get(ship.getIndex())
-					 .getJobs()	
-					 .add(job);
+				port.getShips()
+					.get(ship.getIndex())
+					.getJobs()	
+					.add(job);
 			}
 		}
 		
 		items.put(job.getIndex(), job);
+		port.getItems().put(job.getIndex(), job);
 	}
-	
-	// the get and assign methods below are methods that help to create the data structure hierarchy
-	public SeaPort getSeaPortByIndex(int index, HashMap<Integer, SeaPort> ports) {
-		return ports.get(index);
-	}
-	
-	public Dock getDockByIndex(int index, HashMap<Integer, Dock> docks) {
-		return docks.get(index);
-	}
-	
-	public Ship getShipByIndex(int index, HashMap<Integer, Ship> ships) {
-		return ships.get(index);
-	}
-	
-	public Person getPersonByIndex(Dock dock) {
-		return null;
-	}
-	
-//	public void assignDock(Dock dock, HashMap<Integer, SeaPort> ports) {
-//		SeaPort port = getSeaPortByIndex(dock.getParent(), ports);
-//		port.getDocks().put(dock.getIndex(), dock);
-//	}
-	
-	// link ship to parent
-//	public void assignShip(Ship ship, HashMap<Integer, SeaPort> ports) {
-//		Dock dock = null;
-//		
-//		for(Integer key: ports.keySet()) {
-//			SeaPort port = ports.get(key);
-//			HashMap<Integer, Dock> docks = port.getDocks();
-//			dock = getDockByIndex(ship.getParent(), docks);
-//			if(dock != null) break;			
-//		}
-//		
-//	    if (dock == null) {
-//	       getSeaPortByIndex(ship.getParent(), ports).getShips().put(ship.getIndex(), ship);
-//	       getSeaPortByIndex(ship.getParent(), ports).getQue().put(ship.getIndex(), ship);
-//	    }else {
-//	       dock.setShip(ship);
-//	       getSeaPortByIndex(dock.getParent(), ports).getShips().put(ship.getIndex(), ship);
-//	    }
-//	}
-//			
-//	public void assignPerson(Person person, HashMap<Integer, SeaPort> ports) {
-//		getSeaPortByIndex(person.getParent(), ports).getPersons().put(person.getIndex(), person);
-//	}
-
+		
 	public String toString() {
 		String st = ">>>>> The world:";
 		for(SeaPort port: ports.values()) {
