@@ -1,5 +1,6 @@
 package project4;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -12,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Scanner;
 
 import javax.swing.BorderFactory;
@@ -26,6 +29,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
 
 /*
  * File: SeaPortProgram.java
@@ -45,13 +52,16 @@ import javax.swing.JTextField;
  * 		you can create structure of found items as a return value
  * 5. use HashMaps instead of ArrayLists
  * 6. add sort capabilities (width, weight, draft, length, name)
+ * 7. extend Project 2 to use the Swing class JTree effectively to display the contents of the data file
+ * 8. create a thread for each job, cannot run until a ship has a dock, create a GUI to show the progress of each job.
+ * 
  * */
 
 public class SeaPortProgram extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private static final int WIDTH = 740;
-	private static final int HEIGHT = 250;
+	private static final int WIDTH = 1100;
+	private static final int HEIGHT = 700;
 	
 	public static void main(String[] args) {
 		SeaPortProgram app = new SeaPortProgram();
@@ -78,7 +88,8 @@ public class SeaPortProgram extends JFrame {
 	 * Components:
 	 * JFileChooser, JButton - for user to select file
 	 * JScrollPane, JTextArea - for displaying output
-	 * JTextField, JLabel, JButton, JRadioButton - for searching
+	 * JTextField, JLabel, JButton, JRadioButton - for searching and sorting
+	 * 
 	 * */
 	
 	public class MainPanel extends JPanel {
@@ -102,13 +113,18 @@ public class SeaPortProgram extends JFrame {
 		private JButton sortButton = new JButton("Sort");
 	    private JComboBox<String> sortOrderDropdown;
 	    private JComboBox<String> sortOptionDropdown;
+	    
+	    private JTree tree;
+	    private JScrollPane treeScrollPane;
+	    private DefaultMutableTreeNode root = new DefaultMutableTreeNode("Root");
+	    private DefaultTreeModel treeModel;
 
 		public MainPanel() {
 			
 			/*
 			 * Container
 			 */
-			JPanel container = new JPanel(new GridBagLayout());
+			this.setLayout(new GridBagLayout());
 			GridBagConstraints constraints = new GridBagConstraints();
 			
 			/*
@@ -186,6 +202,146 @@ public class SeaPortProgram extends JFrame {
 			filterAreaPanel.setLayout(new BoxLayout(filterAreaPanel, BoxLayout.Y_AXIS));
 			
 			/*
+			 * JTree
+			 * 
+			 * */
+			
+			root.add(new DefaultMutableTreeNode("Foo"));
+			root.add(new DefaultMutableTreeNode("Bar"));
+	        tree = new JTree(root);
+	        tree.setRootVisible(true);
+	        //treeModel = (DefaultTreeModel) tree.getModel();
+
+	        // https://stackoverflow.com/questions/14563433/jtree-set-background-of-node-to-non-opaque
+	        tree.setCellRenderer(new DefaultTreeCellRenderer() {
+				private static final long serialVersionUID = 1L;
+				
+			    @Override
+			    public Color getBackgroundNonSelectionColor() { return null; }
+
+	        });
+	        tree.setBackground(this.getBackground());
+	        treeScrollPane = new JScrollPane(tree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+	        treeScrollPane.setPreferredSize(new Dimension(275, this.getHeight()));
+	        treeScrollPane.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+	        
+	        
+	        /*
+	         * Jobs
+	         * 
+	         * */
+	        JPanel jobPanel = new JPanel();
+	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
+	        jobPanel.add(new JLabel("JOB_87_98_65"));
+	        jobPanel.add(new JLabel("Resources"));
+	        jobPanel.add(new JButton("Done"));
+	        jobPanel.add(new JButton("Cancel"));
+	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
+	        jobPanel.add(new JLabel("JOB_87_98_65"));
+	        jobPanel.add(new JLabel("Resources"));
+	        jobPanel.add(new JButton("Done"));
+	        jobPanel.add(new JButton("Cancel"));
+	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
+	        jobPanel.add(new JLabel("JOB_87_98_65"));
+	        jobPanel.add(new JLabel("Resources"));
+	        jobPanel.add(new JButton("Done"));
+	        jobPanel.add(new JButton("Cancel"));
+	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
+	        jobPanel.add(new JLabel("JOB_87_98_65"));
+	        jobPanel.add(new JLabel("Resources"));
+	        jobPanel.add(new JButton("Done"));
+	        jobPanel.add(new JButton("Cancel"));
+	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
+	        jobPanel.add(new JLabel("JOB_87_98_65"));
+	        jobPanel.add(new JLabel("Resources"));
+	        jobPanel.add(new JButton("Done"));
+	        jobPanel.add(new JButton("Cancel"));
+	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
+	        jobPanel.add(new JLabel("JOB_87_98_65"));
+	        jobPanel.add(new JLabel("Resources"));
+	        jobPanel.add(new JButton("Done"));
+	        jobPanel.add(new JButton("Cancel"));
+	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
+	        jobPanel.add(new JLabel("JOB_87_98_65"));
+	        jobPanel.add(new JLabel("Resources"));
+	        jobPanel.add(new JButton("Done"));
+	        jobPanel.add(new JButton("Cancel"));
+	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
+	        jobPanel.add(new JLabel("JOB_87_98_65"));
+	        jobPanel.add(new JLabel("Resources"));
+	        jobPanel.add(new JButton("Done"));
+	        jobPanel.add(new JButton("Cancel"));
+	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
+	        jobPanel.add(new JLabel("JOB_87_98_65"));
+	        jobPanel.add(new JLabel("Resources"));
+	        jobPanel.add(new JButton("Done"));
+	        jobPanel.add(new JButton("Cancel"));
+	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
+	        jobPanel.add(new JLabel("JOB_87_98_65"));
+	        jobPanel.add(new JLabel("Resources"));
+	        jobPanel.add(new JButton("Done"));
+	        jobPanel.add(new JButton("Cancel"));
+	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
+	        jobPanel.add(new JLabel("JOB_87_98_65"));
+	        jobPanel.add(new JLabel("Resources"));
+	        jobPanel.add(new JButton("Done"));
+	        jobPanel.add(new JButton("Cancel"));
+	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
+	        jobPanel.add(new JLabel("JOB_87_98_65"));
+	        jobPanel.add(new JLabel("Resources"));
+	        jobPanel.add(new JButton("Done"));
+	        jobPanel.add(new JButton("Cancel"));
+	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
+	        jobPanel.add(new JLabel("JOB_87_98_65"));
+	        jobPanel.add(new JLabel("Resources"));
+	        jobPanel.add(new JButton("Done"));
+	        jobPanel.add(new JButton("Cancel"));
+	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
+	        jobPanel.add(new JLabel("JOB_87_98_65"));
+	        jobPanel.add(new JLabel("Resources"));
+	        jobPanel.add(new JButton("Done"));
+	        jobPanel.add(new JButton("Cancel"));
+	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
+	        jobPanel.add(new JLabel("JOB_87_98_65"));
+	        jobPanel.add(new JLabel("Resources"));
+	        jobPanel.add(new JButton("Done"));
+	        jobPanel.add(new JButton("Cancel"));
+
+	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
+	        jobPanel.add(new JLabel("JOB_87_98_65"));
+	        jobPanel.add(new JLabel("Resources"));
+	        jobPanel.add(new JButton("Done"));
+	        jobPanel.add(new JButton("Cancel"));
+	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
+	        jobPanel.add(new JLabel("JOB_87_98_65"));
+	        jobPanel.add(new JLabel("Resources"));
+	        jobPanel.add(new JButton("Done"));
+	        jobPanel.add(new JButton("Cancel"));
+	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
+	        jobPanel.add(new JLabel("JOB_87_98_65"));
+	        jobPanel.add(new JLabel("Resources"));
+	        jobPanel.add(new JButton("Done"));
+	        jobPanel.add(new JButton("Cancel"));
+	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
+	        jobPanel.add(new JLabel("JOB_87_98_65"));
+	        jobPanel.add(new JLabel("Resources"));
+	        jobPanel.add(new JButton("Done"));
+	        jobPanel.add(new JButton("Cancel"));
+	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
+	        jobPanel.add(new JLabel("JOB_87_98_65"));
+	        jobPanel.add(new JLabel("Resources"));
+	        jobPanel.add(new JButton("Done"));
+	        jobPanel.add(new JButton("Cancel"));
+
+	        jobPanel.setLayout(new GridLayout(20, 5));
+	        
+	        JPanel temp = new JPanel();
+	        temp.setLayout(new GridLayout(20, 5));
+	        JScrollPane jobScrollPane = new JScrollPane(temp, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+	        jobScrollPane.setPreferredSize(new Dimension(this.getWidth(), 460));
+			
+			
+			/*
 			 * Event handlers
 			 * */
 		    FileButtonListener fileButtonListener = new FileButtonListener();
@@ -200,12 +356,31 @@ public class SeaPortProgram extends JFrame {
 			/*
 			 * Main Layout 
 			 * */
-		    constraints.anchor = GridBagConstraints.PAGE_START;
-		    constraints.insets = new Insets(3,0,0,10);
-			container.add(textAreaPanel, constraints);
-			constraints.insets = new Insets(0,0,0,0);
-			container.add(filterAreaPanel, constraints);
-			add(container);
+			
+			constraints.fill = GridBagConstraints.BOTH;
+			constraints.weightx = 0.1;
+			constraints.gridx = 0;
+			constraints.gridy = 0;
+			// int top, int left, int bottom, int right
+			constraints.insets = new Insets(2, 2, 1, 1);
+		    this.add(treeScrollPane, constraints);
+		    
+			constraints.gridx = 1;
+			constraints.gridy = 0;
+		    constraints.insets = new Insets(2, 1, 1, 1);
+			this.add(textAreaPanel, constraints);
+			
+			constraints.gridx = 2;
+			constraints.gridy = 0;
+			constraints.insets = new Insets(0, 0, 0, 0);
+			this.add(filterAreaPanel, constraints);
+			
+			constraints.gridwidth = 3;
+			constraints.weighty = 0.1;
+			constraints.gridx = 0;
+			constraints.gridy = 1;
+			constraints.insets = new Insets(1, 2, 2, 2);
+			this.add(jobScrollPane, constraints);
 		}
 		
 		
@@ -295,7 +470,7 @@ public class SeaPortProgram extends JFrame {
 			ArrayList<String> results = new ArrayList<String>();
 			if(world == null) return results;
 						
-			// for each port, get que, sort it and append to result
+			// for each port, get queue, sort it and append to result
 			for(SeaPort port: world.getPorts().values()) {
 				String portName = port.getName();
 				Integer portNumber = port.getIndex();
@@ -378,38 +553,42 @@ public class SeaPortProgram extends JFrame {
 			for(SeaPort port: ports) {
 				HashMap<Integer, Dock> docks = port.getDocks();
 				HashMap<Integer, Ship> ships = port.getShips();
-				HashMap<Integer, Ship> ques = port.getQue();
+				Queue<Integer> queue = port.getQueue();
 				HashMap<Integer, Person> persons = port.getPersons();
 				
 				ArrayList<Dock> listOfDocks = new ArrayList<Dock>(docks.values());
 				ArrayList<Ship> listOfShips = new ArrayList<Ship>(ships.values());
-				ArrayList<Ship> listOfQue = new ArrayList<Ship>(ques.values());
 				ArrayList<Person> listOfPersons = new ArrayList<Person>(persons.values());
+				ArrayList<Integer> listOfQueue = new ArrayList<Integer>();
+				
+				for(int shipIndex: queue) listOfQueue.add(shipIndex);
+				
 				
 				if(asc) {
 					Collections.sort(listOfDocks);
 					Collections.sort(listOfShips);
-					Collections.sort(listOfQue);
+					Collections.sort(listOfQueue);
 					Collections.sort(listOfPersons);
 				}else {
 					Collections.reverse(listOfDocks);
 					Collections.reverse(listOfShips);
-					Collections.reverse(listOfQue);
+					Collections.reverse(listOfQueue);
 					Collections.reverse(listOfPersons);
 				}
 		        
 				HashMap<Integer, Dock> sortedDocks = new HashMap<Integer, Dock>(listOfDocks.size());
 				HashMap<Integer, Ship> sortedShips = new HashMap<Integer, Ship>(listOfShips.size());
-				HashMap<Integer, Ship> sortedQue = new HashMap<Integer, Ship>(listOfQue.size());
+				Queue<Integer> sortedQueue = new LinkedList<Integer>();
 				HashMap<Integer, Person> sortedPersons = new HashMap<Integer, Person>(listOfPersons.size());
 				
-				for(int i = 0; i < listOfDocks.size(); i++) sortedDocks.put(i, listOfDocks.get(i));
-				for(int i = 0; i < listOfShips.size(); i++) sortedShips.put(i, listOfShips.get(i));
-				for(int i = 0; i < listOfQue.size(); i++) sortedQue.put(i, listOfQue.get(i));
-				for(int i = 0; i < listOfPersons.size(); i++) sortedPersons.put(i, listOfPersons.get(i));
+				for(int i = 0; i < listOfDocks.size(); i++) sortedDocks.put(listOfDocks.get(i).getIndex(), listOfDocks.get(i));
+				for(int i = 0; i < listOfShips.size(); i++) sortedShips.put(listOfShips.get(i).getIndex(), listOfShips.get(i));
+				for(int i = 0; i < listOfQueue.size(); i++) sortedQueue.add(listOfQueue.get(i));
+				for(int i = 0; i < listOfPersons.size(); i++) sortedPersons.put(listOfPersons.get(i).getIndex(), listOfPersons.get(i));
+				
 				
 				port.setDocks(sortedDocks);
-				port.setQue(sortedQue);
+				port.setQueue(sortedQueue);
 				port.setShips(sortedShips);
 				port.setPersons(sortedPersons);
 				results.add(port.toString());
@@ -462,7 +641,7 @@ public class SeaPortProgram extends JFrame {
 			
 			for(SeaPort port: ports.values()) {
 				HashMap<Integer, Dock> docks = port.getDocks();
-				HashMap<Integer, Ship> ques = port.getQue();
+				Queue<Integer> queue = port.getQueue();
 				HashMap<Integer, Ship> ships = port.getShips();
 				HashMap<Integer, Person> persons = port.getPersons();
 				
@@ -470,8 +649,9 @@ public class SeaPortProgram extends JFrame {
 					if(dock.getName().contains(target)) results.add(dock.toString());
 				}
 				
-				for(Ship que: ques.values()) {
-					if(que.getName().contains(target)) results.add(que.toString());
+				for(int shipIndex: queue) {
+					Ship ship = ships.get(shipIndex);
+					if(ship.getName().contains(target)) results.add(ship.toString());
 				}
 				
 				for(Ship ship: ships.values()) {
@@ -491,7 +671,7 @@ public class SeaPortProgram extends JFrame {
 			
 			for(SeaPort port: ports.values()) {
 				HashMap<Integer, Dock> docks = port.getDocks();
-				HashMap<Integer, Ship> ques = port.getQue();
+				Queue<Integer> queue = port.getQueue();
 				HashMap<Integer, Ship> ships = port.getShips();
 				HashMap<Integer, Person> persons = port.getPersons();
 				
@@ -500,9 +680,9 @@ public class SeaPortProgram extends JFrame {
 					if(st.contains(target)) results.add(dock.toString());
 				}
 				
-				for(Ship que: ques.values()) {
-					String st = new StringBuilder().append(que.getIndex()).toString();
-					if(st.contains(target)) results.add(que.toString());
+				for(int shipIndex: queue) {
+					String st = new StringBuilder().append(shipIndex).toString();
+					if(st.contains(target)) results.add(ships.get(shipIndex).toString());
 				}
 				
 				for(Ship ship: ships.values()) {

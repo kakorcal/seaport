@@ -1,13 +1,15 @@
 package project4;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Scanner;
 
 public class SeaPort extends Thing {
 	private HashMap<Integer, Dock> docks = new HashMap<Integer, Dock>();
-	private HashMap<Integer, Ship> que = new HashMap<Integer, Ship>(); // list of ships waiting to dock
 	private HashMap<Integer, Ship> ships = new HashMap<Integer, Ship>(); // list of all ships at port
 	private HashMap<Integer, Person> persons = new HashMap<Integer, Person>(); // people with skills at this port
+	private Queue<Integer> queue = new LinkedList<Integer>(); // queue of ships waiting to dock 
 	
 	public SeaPort(Scanner sc) {
 		super(sc);
@@ -18,15 +20,15 @@ public class SeaPort extends Thing {
 
 	    for (Dock md: docks.values()) {
 	    	st += "\n  " + md.toString();
-	    	st += "\n    Ship: " + md.getShip().toString();
+	    	st += "\n    Ship: " + ships.get(md.getShipIndex()).toString();
 	    }
 	    
 	    st += "\n\n  --- List of all ships in que:";
 	    
-	    for (Ship ms: que.values()) {
-	    	st += "\n  " + ms.toString();	    	
+	    for(int shipIndex: queue) {
+	    	st += "\n  " + ships.get(shipIndex).toString(); 
 	    }
-	    
+	    	    
 	    st += "\n\n  --- List of all ships:";
 	    
 	    for (Ship ms: ships.values()) {
@@ -38,7 +40,7 @@ public class SeaPort extends Thing {
 	    for (Person mp: persons.values()) {
 	    	st += "\n  " + mp.toString();	    	
 	    }
-	    
+	    	    
 	    return st;
 	}
 
@@ -46,8 +48,8 @@ public class SeaPort extends Thing {
 		return docks;
 	}
 
-	public HashMap<Integer, Ship> getQue() {
-		return que;
+	public Queue<Integer> getQueue() {
+		return queue;
 	}
 
 	public HashMap<Integer, Ship> getShips() {
@@ -62,8 +64,8 @@ public class SeaPort extends Thing {
 		this.docks = docks;
 	}
 
-	public void setQue(HashMap<Integer, Ship> que) {
-		this.que = que;
+	public void setQueue(Queue<Integer> queue) {
+		this.queue = queue;
 	}
 
 	public void setShips(HashMap<Integer, Ship> ships) {

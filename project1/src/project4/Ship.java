@@ -4,13 +4,18 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Ship extends Thing {
+	
+	private static final int MAX_PORT_INDEX = 19999;
+	private static final int MAX_DOCK_INDEX = 29999;
+	private int portIndex;
+	private int dockIndex;
 	private PortTime arrivalTime;
 	private PortTime dockTime;
 	private double draft;
 	private double length;
 	private double weight;
 	private double width;
-	private ArrayList<Job> jobs;
+	private ArrayList<Job> jobs = new ArrayList<Job>();
 	
 	public Ship(Scanner sc) {
 		super(sc);
@@ -18,12 +23,35 @@ public class Ship extends Thing {
 		this.length = sc.nextDouble();
 		this.width = sc.nextDouble();
 		this.draft = sc.nextDouble();
+		
+		int parent = this.getParent();
+		if(parent <= MAX_PORT_INDEX) {
+			this.portIndex = parent;
+		}else if (parent > MAX_PORT_INDEX && parent <= MAX_DOCK_INDEX){
+			this.dockIndex = parent;
+		}
 	}
 
 	public String toString() {
 		return super.toString();
 	}
 	
+	public int getPortIndex() {
+		return portIndex;
+	}
+
+	public void setPortIndex(int portIndex) {
+		this.portIndex = portIndex;
+	}
+
+	public int getDockIndex() {
+		return dockIndex;
+	}
+
+	public void setDockIndex(int dockIndex) {
+		this.dockIndex = dockIndex;
+	}
+
 	public String getShipDimensions() {
 		String st = "  Weight: " + weight + "\n";
 		st += "  Length: " + length + "\n";
