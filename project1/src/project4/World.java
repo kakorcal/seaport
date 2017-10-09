@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Queue;
 import java.util.Scanner;
 
-import javax.swing.JPanel;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 public class World extends Thing {
@@ -22,7 +22,7 @@ public class World extends Thing {
 	}
 	
 	// parses the line of string into individual class members
-	public void process(String st, JPanel container) {
+	public void process(String st, DefaultTableModel tableModel) {
 		System.out.println("Processing > " + st);
 		
 	    Scanner sc = new Scanner(st);
@@ -49,7 +49,7 @@ public class World extends Thing {
 	    		addPerson(new Person(sc));
 	    		break;
 	    	case "job":
-	    		addJob(new Job(sc, container));
+	    		addJob(new Job(sc, tableModel, jobCount));
 	    		jobCount++;
 	    		break;
 	        default:
@@ -197,14 +197,9 @@ public class World extends Thing {
 				Dock dock = docks.get(dockKey);
 				ArrayList<Job> jobs = dock.getJobs();
 				
-				if(!jobs.isEmpty()) {
-					for(Job job: jobs) {
-						job.getThread().start();
-					}
+				for(Job job: jobs) {
+					job.getThread().start();
 				}
-//				else {
-//					
-//				}
 			}
 			
 			for(int shipKey: ships.keySet()) {
@@ -214,6 +209,13 @@ public class World extends Thing {
 				if(!jobs.isEmpty()) {
 					for(Job job: jobs) {
 						job.getThread().start();
+					}
+				}else {
+					// create a job that immediately finishes so 
+					// that another ship in the queue can goto dock
+					int dockKey = ship.getDockIndex();
+					if(dockKey != -1) {
+						new Job(shipKey, dockKey, port).getThread().start();						
 					}
 				}
 			}

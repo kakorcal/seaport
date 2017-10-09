@@ -2,12 +2,14 @@ package project4;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Queue;
 import java.util.Scanner;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 public class Job extends Thing implements Runnable {
 	
@@ -20,17 +22,15 @@ public class Job extends Thing implements Runnable {
 	private ArrayList<String> requirements = new ArrayList<String>();
 	private Thread thread = null;
 	private SeaPort port = null;
-	private JPanel container = null;
+	private DefaultTableModel tableModel = null;
+	private int tableRow = -1;
 	private JProgressBar progressBar = new JProgressBar();
     private boolean goFlag = true;
     private boolean noKillFlag = true;
-	private JButton statusBtn = new JButton("Stop");
-	private JButton cancelBtn = new JButton ("Cancel");
-	Status status = Status.SUSPENDED;
+	private JButton statusBtn = new JButton(Status.JOB_STOP.getStatus());
+	private JButton cancelBtn = new JButton (Status.JOB_CANCEL.getStatus());
 	
-	enum Status {RUNNING, SUSPENDED, WAITING, DONE};
-	
-	public Job(Scanner sc, JPanel container) {
+	public Job(Scanner sc, DefaultTableModel tableModel, int tableRow) {
 		super(sc);
 		
 		this.duration = sc.nextDouble();
@@ -39,7 +39,8 @@ public class Job extends Thing implements Runnable {
 			requirements.add(sc.next());
 		}
 		
-		this.container = container;
+		this.tableModel = tableModel;
+		this.tableRow = tableRow;
 		this.thread = new Thread(this, this.getName());
 		
 		int parent = this.getParent();
@@ -50,13 +51,48 @@ public class Job extends Thing implements Runnable {
 		}
 	}
 	
+	// case where no job is required and ship is in dock
+	public Job(int shipIndex, int dockIndex, SeaPort port) {
+		this.shipIndex = shipIndex;
+		this.dockIndex = dockIndex;
+		this.port = port;
+		this.thread = new Thread(this);
+	}
+	
 	public void buildJob() {
+		Object[] rowData = new Object[8];
 		progressBar.setStringPainted(true);
-		container.add(progressBar);
-		container.add(new JLabel(port.getShips().get(shipIndex).getName()));
-		container.add(new JLabel(this.getName()));
-		container.add(statusBtn);
-		container.add(cancelBtn);		
+		statusBtn.setOpaque(true);
+		cancelBtn.setOpaque(true);
+		
+		rowData[0] = this.getName();
+		rowData[2] = port.getName(); 
+		rowData[5] = progressBar;
+		rowData[6] = statusBtn;
+		rowData[7] = cancelBtn; 
+				
+		if(requirements.size() == 0) {
+			rowData[1] = Status.NONE.getStatus();			
+		}else {
+			String st = "";
+			for(String requirement: requirements) {
+				st += requirement + " ";
+			}
+			rowData[1] = st;
+		}
+		
+		Ship ship = port.getShips().get(shipIndex);
+		Dock dock = port.getDocks().get(ship.getDockIndex());
+		
+		if(dock == null) {
+			rowData[3] = Status.NONE.getStatus();
+		}else {
+			rowData[3] = dock.getName();
+		}
+		
+		rowData[4] = ship.getName();
+		
+		tableModel.addRow(rowData);
 	}
 	
 	public void toggleGoFlag () {
@@ -69,26 +105,9 @@ public class Job extends Thing implements Runnable {
 		cancelBtn.validate();
 	}
 	
-	void showStatus (Status st) {
-		status = st;
-		switch (status) {
-			case RUNNING:
-				statusBtn.setBackground(Color.green);
-				statusBtn.setText("Running");
-		        break;
-		    case SUSPENDED:
-		    	statusBtn.setBackground(Color.yellow);
-		    	statusBtn.setText("Suspended");
-		        break;
-		    case WAITING:
-		    	statusBtn.setBackground(Color.orange);
-		    	statusBtn.setText("Waiting Turn");
-		        break;
-		    case DONE:
-		    	statusBtn.setBackground(Color.red);
-		        statusBtn.setText("Done");
-		        break;
-		}
+	void showJobStatus (String status, Color color) {
+		statusBtn.setBackground(color);
+		statusBtn.setText(status);
 		statusBtn.validate();
 	}
 	
@@ -98,54 +117,161 @@ public class Job extends Thing implements Runnable {
 	}
 	
 	public void run() {
+		// initially check if ship requires no job and is already at the dock
+		synchronized(port) {
+			if(shipIndex != -1 && dockIndex != -1) {
+				Queue<Integer> queue = port.getQueue();
+				
+				while(!queue.isEmpty()) {
+					Integer queueShipIndex = queue.poll();
+					Ship ship = port.getShips().get(queueShipIndex);
+					ArrayList<Job> jobs = ship.getJobs();
+					
+					if(!jobs.isEmpty()) {
+						port.getDocks()
+						    .get(dockIndex)
+						    .setShipIndex(queueShipIndex);
+						
+						port.getShips()
+							.get(queueShipIndex)
+							.setDockIndex(dockIndex);
+						
+						port.getShips()
+							.get(shipIndex)
+							.setDockIndex(-1);
+						
+						port.getShips()
+							.get(queueShipIndex)
+							.setParent(dockIndex);
+				
+						port.getShips()
+							.get(shipIndex)
+							.setParent(-1);
+						
+						port.setQueue(queue);
+						break;
+					}
+				}
+				port.notifyAll();
+				return;
+			}
+			port.notifyAll();
+		}
+		
 		// check first to see if the ship is in dock
 		synchronized(port) {
 			while(shipInQueue()) {
 				try {
 					port.wait();
 				} catch (InterruptedException e) { e.printStackTrace(); }
-			}			
+			}
+			
+			Ship ship = port.getShips().get(shipIndex);
+			String dockName = port.getDocks().get(ship.getDockIndex()).getName();
+			tableModel.setValueAt(dockName, tableRow, 3);			
 		}
 		
 		// complete the job
+		doJob();
+	    
+		synchronized(port) {
+			Ship ship = port.getShips().get(shipIndex);
+			int dockIndex = ship.getDockIndex();
+			ArrayList<Job> jobs = removeJob(ship.getJobs());
+			
+			port.getShips()
+				.get(shipIndex)
+				.setJobs(jobs);
+			
+			tableModel.setValueAt(Status.SHIP_RELEASED.getStatus(), tableRow, 3);
+			
+			if(jobs.isEmpty()) {
+				Queue<Integer> queue = port.getQueue();
+				
+				while(!queue.isEmpty()) {
+					Integer queueShipIndex = queue.poll();
+					Ship queueShip = port.getShips().get(queueShipIndex);
+					ArrayList<Job> queueJob = queueShip.getJobs();
+					
+					if(!queueJob.isEmpty()) {
+						port.getDocks()
+							.get(dockIndex)
+							.setShipIndex(queueShipIndex);
+						
+						port.getShips()
+							.get(queueShipIndex)
+							.setDockIndex(dockIndex);
+						
+						port.getShips()
+							.get(shipIndex)
+							.setDockIndex(-1);
+						
+						port.getShips()
+							.get(queueShipIndex)
+							.setParent(dockIndex);
+					
+						port.getShips()
+							.get(shipIndex)
+							.setParent(-1);
+						
+						port.setQueue(queue);
+						break;
+					}
+				}
+			}
+			
+			port.notifyAll();
+		}
+	}
+	
+	private void doJob() {
 	    long time = System.currentTimeMillis();
 	    long startTime = time;
 	    long stopTime = (long) (time + duration);
 	    
-	    int dockInt = port.getShips().get(shipIndex).getParent();
-	    System.out.println("Running Job: " + this.getName() + ", Ship index: " + shipIndex + ", At what dock: " + port.getDocks().get(dockInt).getName());
+	    Ship ship = port.getShips().get(shipIndex);
+	    System.out.println(
+	    		"Running Job: " + this.getName() + 
+	    		", Ship index: " + shipIndex + 
+	    		", Dock: " + 
+	    		port.getDocks().get(ship.getDockIndex()).getName());
+	    
 	    while(time < stopTime && noKillFlag) {
 	    	try {
 	    		Thread.sleep(1000);
 	    	} catch(InterruptedException e) {}
 	    	
 	    	if(goFlag) {
-	    		showStatus(Status.RUNNING);
+	    		showJobStatus(Status.JOB_RUNNING.getStatus(), Status.JOB_RUNNING.getColor());
 	    		time += 10;
 	    		showProgressBar((int)(((time - startTime) / duration) * 100));
 	    		progressBar.setValue((int)(((time - startTime) / duration) * 100));
 	    		progressBar.validate();
 	    	} else {
-	    		showStatus(Status.SUSPENDED);
+	    		showJobStatus(Status.JOB_SUSPENDED.getStatus(), Status.JOB_SUSPENDED.getColor());
 	    	}
 	    }
 	    
 	    showProgressBar(100);
-	    showStatus(Status.DONE);
-	    
-		// if the ship is in dock, acquire the dock
-		synchronized(port) {
-			port.notifyAll();
+	    showJobStatus(Status.JOB_DONE.getStatus(), Status.JOB_DONE.getColor());
+	}
+	
+	private ArrayList<Job> removeJob(ArrayList<Job> jobs) {
+		int currentIndex = this.getIndex();
+		int key = -1;
+		
+		for(int i = 0; i < jobs.size(); i++) {
+			int jobIndex = jobs.get(i).getIndex();
+			
+			if(currentIndex == jobIndex) key = i;
 		}
 		
-		// do the jobs
+		if(key != -1) {
+			Job removed = jobs.remove(key);
+			System.out.println("Removing job: " + removed.getName() + " Jobs remaining: " + jobs.size());
+		}
 		
-		
-		// release the ship from dock, 
-		// check if jobs in ship are complete, add ship from queue to dock if it is
-//		synchronized(port) {
-//			
-//		}
+		return jobs;
 	}
 	
 	private boolean shipInQueue() {
@@ -210,11 +336,19 @@ public class Job extends Thing implements Runnable {
 		this.port = port;
 	}
 
-	public JPanel getContainer() {
-		return container;
+	public DefaultTableModel getTableModel() {
+		return tableModel;
 	}
 
-	public void setContainer(JPanel container) {
-		this.container = container;
-	}	
+	public void setTableModel(DefaultTableModel tableModel) {
+		this.tableModel = tableModel;
+	}
+
+	public int getTableRow() {
+		return tableRow;
+	}
+
+	public void setTableRow(int tableRow) {
+		this.tableRow = tableRow;
+	}
 }

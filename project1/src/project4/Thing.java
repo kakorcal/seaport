@@ -39,4 +39,16 @@ public class Thing implements Comparable<Thing> {
 	public int getParent() {
 		return parent;
 	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
+
+	public void setParent(int parent) {
+		this.parent = parent;
+	}
 }

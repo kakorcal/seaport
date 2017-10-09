@@ -27,9 +27,11 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTree;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
@@ -120,8 +122,11 @@ public class SeaPortProgram extends JFrame {
 	    private DefaultMutableTreeNode root = new DefaultMutableTreeNode("Root");
 	    private DefaultTreeModel treeModel;
 	    
-	    private JPanel jobPanel = new JPanel();
-	    private JScrollPane jobScrollPane = new JScrollPane(jobPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+	    private JTable jobTable = new JTable();
+        Object[] jobTableColumns = {"Job", "Requirements", "Port", "Dock", "Ship", "", "", ""};
+        DefaultTableModel jobTableModel = new DefaultTableModel();
+	    private JScrollPane jobScrollPane;
+	    //private JPanel jobPanel = new JPanel();
 
 		public MainPanel() {
 			
@@ -226,8 +231,12 @@ public class SeaPortProgram extends JFrame {
 	        
 	        
 	        /*
-	         * Job Threads
+	         * Job Threads Table
 	         * */	        
+	        jobTableModel.setColumnIdentifiers(jobTableColumns);
+	        jobTable.setModel(jobTableModel);
+	        jobTable.setRowHeight(20);
+	        jobScrollPane = new JScrollPane(jobTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	        jobScrollPane.setPreferredSize(new Dimension(this.getWidth(), 460));
 			
 			/*
@@ -297,7 +306,7 @@ public class SeaPortProgram extends JFrame {
 					world.setJobCount(0);
 					
 					while(sc.hasNextLine()) {
-						world.process(sc.nextLine(), jobPanel);
+						world.process(sc.nextLine(), jobTableModel);
 					}
 					
 					sc.close();
@@ -306,7 +315,7 @@ public class SeaPortProgram extends JFrame {
 					world.toTree(root);
 					treeModel.reload(root);
 					
-					jobPanel.setLayout(new GridLayout(world.getJobCount(), 5));
+					//jobPanel.setLayout(new GridLayout(world.getJobCount(), 5));
 					jobScrollPane.validate();
 					world.runJobs();
 				}else {
