@@ -302,22 +302,14 @@ public class SeaPortProgram extends JFrame {
 				if(fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 					File file = fileChooser.getSelectedFile();
 					Scanner sc = new Scanner(file);
-					world.setItems(new HashMap<Integer, Thing>());
-					world.setJobCount(0);
+					reset();
 					
 					while(sc.hasNextLine()) {
 						world.process(sc.nextLine(), jobTableModel);
 					}
 					
 					sc.close();
-					textAreaField.setText(world.toString());
-					root.removeAllChildren();
-					world.toTree(root);
-					treeModel.reload(root);
-					
-					//jobPanel.setLayout(new GridLayout(world.getJobCount(), 5));
-					jobScrollPane.validate();
-					world.runJobs();
+					render();
 				}else {
 					textAreaField.setText("No file was selected");
 					root.removeAllChildren();
@@ -329,7 +321,32 @@ public class SeaPortProgram extends JFrame {
 				treeModel.reload(root);
 			}
 		}
+		
+		private void reset() {
+			world.setItems(new HashMap<Integer, Thing>());
+			world.setJobCount(0);
+			jobTableModel.setRowCount(0);
+			
+//			try {
+//				Thread.sleep(1000);
+//			} catch (InterruptedException e) { e.printStackTrace(); }
+		}
 				
+		private void render() {
+			// text area
+			textAreaField.setText(world.toString());
+			
+			// jtree
+			root.removeAllChildren();
+			world.toTree(root);
+			treeModel.reload(root);
+			
+			// job table
+			jobTableModel.setRowCount(world.getJobCount());
+			jobScrollPane.validate();
+			world.runJobs();
+		}
+		
 		class FileButtonListener extends MouseAdapter {
 			public void mouseClicked(MouseEvent event) {
 				openFile();

@@ -266,11 +266,16 @@ public class World extends Thing {
 		SeaPort port = null;
 		
 		if(dock != null) {
-			// in this case, we will run the same jobs for every ship that goes to the dock
+			// in this case (aSPab.txt) all ships without a dock will not be assigned jobs
 			port = ports.get(dock.getParent());
 			
-			port.getDocks()
-				.get(dock.getIndex())
+			int shipIndex = port.getDocks().get(dock.getIndex()).getShipIndex();
+			
+			job.setShipIndex(shipIndex);
+			job.setDockIndex(-1);
+			
+			port.getShips()
+				.get(shipIndex)
 				.getJobs()
 				.add(job);
 		}else {

@@ -6,9 +6,7 @@ import java.util.Queue;
 import java.util.Scanner;
 
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JProgressBar;
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 public class Job extends Thing implements Runnable {
@@ -67,9 +65,9 @@ public class Job extends Thing implements Runnable {
 		
 		rowData[0] = this.getName();
 		rowData[2] = port.getName(); 
-		rowData[5] = progressBar;
-		rowData[6] = statusBtn;
-		rowData[7] = cancelBtn; 
+		rowData[5] = "PROGRESS BAR";
+		rowData[6] = "STATUS BUTTON";
+		rowData[7] = "CANCEL BUTTON"; 
 				
 		if(requirements.size() == 0) {
 			rowData[1] = Status.NONE.getStatus();			
@@ -150,6 +148,11 @@ public class Job extends Thing implements Runnable {
 						
 						port.setQueue(queue);
 						break;
+					}else {
+						System.out.println(
+								"Skipping Ship: " + ship.getName() + 
+								", Dock: " + port.getDocks().get(ship.getDockIndex()).getName() + 
+								", Port: " + port.getName());
 					}
 				}
 				port.notifyAll();
@@ -157,7 +160,7 @@ public class Job extends Thing implements Runnable {
 			}
 			port.notifyAll();
 		}
-		
+				
 		// check first to see if the ship is in dock
 		synchronized(port) {
 			while(shipInQueue()) {
@@ -216,6 +219,11 @@ public class Job extends Thing implements Runnable {
 						
 						port.setQueue(queue);
 						break;
+					}else {
+						System.out.println(
+								"Skipping Ship: " + queueShip.getName() + 
+								", Dock: NONE" +
+								", Port: " + port.getName() + " Dock: NONE");
 					}
 				}
 			}
@@ -232,9 +240,9 @@ public class Job extends Thing implements Runnable {
 	    Ship ship = port.getShips().get(shipIndex);
 	    System.out.println(
 	    		"Running Job: " + this.getName() + 
-	    		", Ship index: " + shipIndex + 
-	    		", Dock: " + 
-	    		port.getDocks().get(ship.getDockIndex()).getName());
+	    		", Ship: " + ship.getName() + 
+	    		", Dock: " + port.getDocks().get(ship.getDockIndex()).getName() +
+	    		", Port: " + port.getName());
 	    
 	    while(time < stopTime && noKillFlag) {
 	    	try {
@@ -262,13 +270,12 @@ public class Job extends Thing implements Runnable {
 		
 		for(int i = 0; i < jobs.size(); i++) {
 			int jobIndex = jobs.get(i).getIndex();
-			
 			if(currentIndex == jobIndex) key = i;
 		}
 		
 		if(key != -1) {
 			Job removed = jobs.remove(key);
-			System.out.println("Removing job: " + removed.getName() + " Jobs remaining: " + jobs.size());
+			System.out.println("Removing Job: " + removed.getName() + " Jobs Remaining: " + jobs.size());
 		}
 		
 		return jobs;
@@ -285,7 +292,7 @@ public class Job extends Thing implements Runnable {
 	}
 
 	public String toString() {
-		return "";
+		return super.toString();
 	}
 
 	public int getDockIndex() {
