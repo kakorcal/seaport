@@ -119,6 +119,9 @@ public class SeaPortProgram extends JFrame {
 	    private JScrollPane treeScrollPane;
 	    private DefaultMutableTreeNode root = new DefaultMutableTreeNode("Root");
 	    private DefaultTreeModel treeModel;
+	    
+	    private JPanel jobPanel = new JPanel();
+	    private JScrollPane jobScrollPane = new JScrollPane(jobPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 		public MainPanel() {
 			
@@ -202,7 +205,6 @@ public class SeaPortProgram extends JFrame {
 			filterAreaPanel.add(sortAreaPanel);
 			filterAreaPanel.setLayout(new BoxLayout(filterAreaPanel, BoxLayout.Y_AXIS));
 			
-			
 			/*
 			 * Tree area
 			 * */
@@ -225,113 +227,7 @@ public class SeaPortProgram extends JFrame {
 	        
 	        /*
 	         * Job Threads
-	         * */
-	        JPanel jobPanel = new JPanel();
-	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
-	        jobPanel.add(new JLabel("JOB_87_98_65"));
-	        jobPanel.add(new JLabel("Resources"));
-	        jobPanel.add(new JButton("Done"));
-	        jobPanel.add(new JButton("Cancel"));
-	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
-	        jobPanel.add(new JLabel("JOB_87_98_65"));
-	        jobPanel.add(new JLabel("Resources"));
-	        jobPanel.add(new JButton("Done"));
-	        jobPanel.add(new JButton("Cancel"));
-	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
-	        jobPanel.add(new JLabel("JOB_87_98_65"));
-	        jobPanel.add(new JLabel("Resources"));
-	        jobPanel.add(new JButton("Done"));
-	        jobPanel.add(new JButton("Cancel"));
-	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
-	        jobPanel.add(new JLabel("JOB_87_98_65"));
-	        jobPanel.add(new JLabel("Resources"));
-	        jobPanel.add(new JButton("Done"));
-	        jobPanel.add(new JButton("Cancel"));
-	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
-	        jobPanel.add(new JLabel("JOB_87_98_65"));
-	        jobPanel.add(new JLabel("Resources"));
-	        jobPanel.add(new JButton("Done"));
-	        jobPanel.add(new JButton("Cancel"));
-	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
-	        jobPanel.add(new JLabel("JOB_87_98_65"));
-	        jobPanel.add(new JLabel("Resources"));
-	        jobPanel.add(new JButton("Done"));
-	        jobPanel.add(new JButton("Cancel"));
-	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
-	        jobPanel.add(new JLabel("JOB_87_98_65"));
-	        jobPanel.add(new JLabel("Resources"));
-	        jobPanel.add(new JButton("Done"));
-	        jobPanel.add(new JButton("Cancel"));
-	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
-	        jobPanel.add(new JLabel("JOB_87_98_65"));
-	        jobPanel.add(new JLabel("Resources"));
-	        jobPanel.add(new JButton("Done"));
-	        jobPanel.add(new JButton("Cancel"));
-	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
-	        jobPanel.add(new JLabel("JOB_87_98_65"));
-	        jobPanel.add(new JLabel("Resources"));
-	        jobPanel.add(new JButton("Done"));
-	        jobPanel.add(new JButton("Cancel"));
-	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
-	        jobPanel.add(new JLabel("JOB_87_98_65"));
-	        jobPanel.add(new JLabel("Resources"));
-	        jobPanel.add(new JButton("Done"));
-	        jobPanel.add(new JButton("Cancel"));
-	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
-	        jobPanel.add(new JLabel("JOB_87_98_65"));
-	        jobPanel.add(new JLabel("Resources"));
-	        jobPanel.add(new JButton("Done"));
-	        jobPanel.add(new JButton("Cancel"));
-	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
-	        jobPanel.add(new JLabel("JOB_87_98_65"));
-	        jobPanel.add(new JLabel("Resources"));
-	        jobPanel.add(new JButton("Done"));
-	        jobPanel.add(new JButton("Cancel"));
-	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
-	        jobPanel.add(new JLabel("JOB_87_98_65"));
-	        jobPanel.add(new JLabel("Resources"));
-	        jobPanel.add(new JButton("Done"));
-	        jobPanel.add(new JButton("Cancel"));
-	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
-	        jobPanel.add(new JLabel("JOB_87_98_65"));
-	        jobPanel.add(new JLabel("Resources"));
-	        jobPanel.add(new JButton("Done"));
-	        jobPanel.add(new JButton("Cancel"));
-	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
-	        jobPanel.add(new JLabel("JOB_87_98_65"));
-	        jobPanel.add(new JLabel("Resources"));
-	        jobPanel.add(new JButton("Done"));
-	        jobPanel.add(new JButton("Cancel"));
-	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
-	        jobPanel.add(new JLabel("JOB_87_98_65"));
-	        jobPanel.add(new JLabel("Resources"));
-	        jobPanel.add(new JButton("Done"));
-	        jobPanel.add(new JButton("Cancel"));
-	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
-	        jobPanel.add(new JLabel("JOB_87_98_65"));
-	        jobPanel.add(new JLabel("Resources"));
-	        jobPanel.add(new JButton("Done"));
-	        jobPanel.add(new JButton("Cancel"));
-	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
-	        jobPanel.add(new JLabel("JOB_87_98_65"));
-	        jobPanel.add(new JLabel("Resources"));
-	        jobPanel.add(new JButton("Done"));
-	        jobPanel.add(new JButton("Cancel"));
-	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
-	        jobPanel.add(new JLabel("JOB_87_98_65"));
-	        jobPanel.add(new JLabel("Resources"));
-	        jobPanel.add(new JButton("Done"));
-	        jobPanel.add(new JButton("Cancel"));
-	        jobPanel.add(new JLabel("Lorem Ipsum Dolor Emit"));
-	        jobPanel.add(new JLabel("JOB_87_98_65"));
-	        jobPanel.add(new JLabel("Resources"));
-	        jobPanel.add(new JButton("Done"));
-	        jobPanel.add(new JButton("Cancel"));
-
-	        JPanel temp = new JPanel();
-	        temp.setLayout(new GridLayout(20, 5));
-	        jobPanel.setLayout(new GridLayout(20, 5));	        
-	        JScrollPane jobScrollPane = new JScrollPane(jobPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+	         * */	        
 	        jobScrollPane.setPreferredSize(new Dimension(this.getWidth(), 460));
 			
 			/*
@@ -398,9 +294,10 @@ public class SeaPortProgram extends JFrame {
 					File file = fileChooser.getSelectedFile();
 					Scanner sc = new Scanner(file);
 					world.setItems(new HashMap<Integer, Thing>());
+					world.setJobCount(0);
 					
 					while(sc.hasNextLine()) {
-						world.process(sc.nextLine());
+						world.process(sc.nextLine(), jobPanel);
 					}
 					
 					sc.close();
@@ -408,6 +305,10 @@ public class SeaPortProgram extends JFrame {
 					root.removeAllChildren();
 					world.toTree(root);
 					treeModel.reload(root);
+					
+					jobPanel.setLayout(new GridLayout(world.getJobCount(), 5));
+					jobScrollPane.validate();
+					world.runJobs();
 				}else {
 					textAreaField.setText("No file was selected");
 					root.removeAllChildren();

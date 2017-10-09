@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Dock extends Thing {
-	private int portIndex;
-	private int shipIndex;
+	
+	private int portIndex = -1;
+	private int shipIndex = -1;
 	private ArrayList<Job> jobs = new ArrayList<Job>();
 	
 	public Dock(Scanner sc) {

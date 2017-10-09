@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Person extends Thing {
 	
-	private int portIndex;
+	private int portIndex = -1;
 	private String skill;
 	
 	public Person(Scanner sc) {

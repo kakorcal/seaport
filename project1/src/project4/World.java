@@ -1,9 +1,11 @@
 package project4;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Queue;
 import java.util.Scanner;
 
+import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 public class World extends Thing {
@@ -11,7 +13,8 @@ public class World extends Thing {
 	private static final int MAX_PORT_INDEX = 19999;
 	private static final int MAX_DOCK_INDEX = 29999;
 	private HashMap<Integer, SeaPort> ports = new HashMap<Integer, SeaPort>();
-	private HashMap<Integer, Thing> items = new HashMap<Integer, Thing>(); 
+	private HashMap<Integer, Thing> items = new HashMap<Integer, Thing>();
+	private int jobCount = 0;
 	private PortTime time;
 	
 	public World() {
@@ -19,7 +22,7 @@ public class World extends Thing {
 	}
 	
 	// parses the line of string into individual class members
-	public void process(String st) {
+	public void process(String st, JPanel container) {
 		System.out.println("Processing > " + st);
 		
 	    Scanner sc = new Scanner(st);
@@ -46,7 +49,8 @@ public class World extends Thing {
 	    		addPerson(new Person(sc));
 	    		break;
 	    	case "job":
-	    		addJob(new Job(sc));
+	    		addJob(new Job(sc, container));
+	    		jobCount++;
 	    		break;
 	        default:
 	        	break;
@@ -183,6 +187,39 @@ public class World extends Thing {
 		}
 	}
 	
+	public void runJobs() {
+		for(int portKey: ports.keySet()) {
+			SeaPort port = ports.get(portKey);
+			HashMap<Integer, Dock> docks = port.getDocks();
+			HashMap<Integer, Ship> ships = port.getShips();
+			
+			for(int dockKey: docks.keySet()) {
+				Dock dock = docks.get(dockKey);
+				ArrayList<Job> jobs = dock.getJobs();
+				
+				if(!jobs.isEmpty()) {
+					for(Job job: jobs) {
+						job.getThread().start();
+					}
+				}
+//				else {
+//					
+//				}
+			}
+			
+			for(int shipKey: ships.keySet()) {
+				Ship ship = ships.get(shipKey);
+				ArrayList<Job> jobs = ship.getJobs();
+				
+				if(!jobs.isEmpty()) {
+					for(Job job: jobs) {
+						job.getThread().start();
+					}
+				}
+			}
+		}
+	}
+	
 	// the get and add methods below are methods that help to create the data structure hierarchy
 	public void addPort(SeaPort port) {
 		ports.put(port.getIndex(), port);
@@ -258,6 +295,8 @@ public class World extends Thing {
 		
 		items.put(job.getIndex(), job);
 		port.getItems().put(job.getIndex(), job);
+		job.setPort(port);
+		job.buildJob();
 	}
 		
 	public String toString() {
@@ -291,5 +330,13 @@ public class World extends Thing {
 
 	public void setTime(PortTime time) {
 		this.time = time;
+	}
+
+	public int getJobCount() {
+		return jobCount;
+	}
+
+	public void setJobCount(int jobCount) {
+		this.jobCount = jobCount;
 	}	
 }

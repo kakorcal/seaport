@@ -9,8 +9,8 @@ public class Ship extends Thing {
 	public static final String PASSENGER = "Passenger";
 	private static final int MAX_PORT_INDEX = 19999;
 	private static final int MAX_DOCK_INDEX = 29999;
-	private int portIndex;
-	private int dockIndex;
+	private int portIndex = -1;
+	private int dockIndex = -1;
 	private PortTime arrivalTime;
 	private PortTime dockTime;
 	private double draft;
