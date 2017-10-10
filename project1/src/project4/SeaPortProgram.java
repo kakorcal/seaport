@@ -6,6 +6,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -17,6 +18,8 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -123,7 +126,10 @@ public class SeaPortProgram extends JFrame {
 	    private DefaultTreeModel treeModel;
 	    
 	    private JTable jobTable = new JTable();
-        Object[] jobTableColumns = {"Job", "Requirements", "Port", "Dock", "Ship", "", "", ""};
+        Object[] jobTableColumns = {
+        		"Job", "Requirements", "Port", "Dock", 
+        		"Ship", "Progress Bar", "Status", "Cancel",
+        		"jobIndex", "portIndex", "dockIndex", "shipIndex"};
         DefaultTableModel jobTableModel = new DefaultTableModel();
 	    private JScrollPane jobScrollPane;
 	    //private JPanel jobPanel = new JPanel();
@@ -236,6 +242,10 @@ public class SeaPortProgram extends JFrame {
 	        jobTableModel.setColumnIdentifiers(jobTableColumns);
 	        jobTable.setModel(jobTableModel);
 	        jobTable.setRowHeight(20);
+	        jobTable.removeColumn(jobTable.getColumn("jobIndex"));
+	        jobTable.removeColumn(jobTable.getColumn("portIndex"));
+	        jobTable.removeColumn(jobTable.getColumn("dockIndex"));
+	        jobTable.removeColumn(jobTable.getColumn("shipIndex"));	        
 	        jobScrollPane = new JScrollPane(jobTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	        jobScrollPane.setPreferredSize(new Dimension(this.getWidth(), 460));
 			
@@ -342,11 +352,69 @@ public class SeaPortProgram extends JFrame {
 			treeModel.reload(root);
 			
 			// job table
+	        new ButtonColumn(jobTable, new AbstractAction() {
+	        	private static final long serialVersionUID = 1L;
+	            public void actionPerformed(ActionEvent e) {
+	            	//JTable table = (JTable) e.getSource();
+	                int row = Integer.valueOf(e.getActionCommand());
+	                int jobIndex = (int) jobTableModel.getValueAt(row, 8);
+	                int portIndex = (int) jobTableModel.getValueAt(row, 9);
+	                int shipIndex = (int) jobTableModel.getValueAt(row, 11);
+	                
+	                ArrayList<Job> jobs = world
+	                		.getPorts().get(portIndex)
+	                		.getShips().get(shipIndex)
+	                		.getJobs();
+	                
+	                for(Job job: jobs) {
+	                	if(job.getIndex() == jobIndex) {
+	                		job.setGoFlag(!job.isGoFlag());
+	                	}
+	                }
+	                
+	                world.getPorts().get(portIndex)
+            			 .getShips().get(shipIndex)
+            			 .setJobs(jobs);
+	                
+	            	System.out.println("Status clicked: " + jobTableModel.getValueAt(row, 1) + ", " + jobTableModel.getValueAt(row, 8));
+	            }
+	        }, 6);
+	        
+	        new ButtonColumn(jobTable, new AbstractAction() {
+				private static final long serialVersionUID = 1L;
+				public void actionPerformed(ActionEvent e) {
+	            	//JTable table = (JTable) e.getSource();
+	                int row = Integer.valueOf(e.getActionCommand());
+	                
+	                int jobIndex = (int) jobTableModel.getValueAt(row, 8);
+	                int portIndex = (int) jobTableModel.getValueAt(row, 9);
+	                int shipIndex = (int) jobTableModel.getValueAt(row, 11);
+	                
+	                ArrayList<Job> jobs = world
+	                		.getPorts().get(portIndex)
+	                		.getShips().get(shipIndex)
+	                		.getJobs();
+	                
+	                for(Job job: jobs) {
+	                	if(job.getIndex() == jobIndex) {
+	                		job.setKillFlag();
+	                	}
+	                }
+	                
+	                world.getPorts().get(portIndex)
+            			 .getShips().get(shipIndex)
+            			 .setJobs(jobs);
+	                
+	                System.out.println("Cancel clicked: " + jobTableModel.getValueAt(row, 1) + ", " + jobTableModel.getValueAt(row, 8));
+	            }
+	        }, 7);
+			
 			jobTableModel.setRowCount(world.getJobCount());
 			jobScrollPane.validate();
 			world.runJobs();
+			
 		}
-		
+				
 		class FileButtonListener extends MouseAdapter {
 			public void mouseClicked(MouseEvent event) {
 				openFile();

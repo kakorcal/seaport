@@ -5,9 +5,8 @@ import java.util.HashMap;
 import java.util.Queue;
 import java.util.Scanner;
 
+import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
-
-import project4.SeaPortProgram.MainPanel.JobTableModel;
 
 public class World extends Thing {
 	
@@ -23,7 +22,7 @@ public class World extends Thing {
 	}
 	
 	// parses the line of string into individual class members
-	public void process(String st, JobTableModel tableModel) {
+	public void process(String st, DefaultTableModel tableModel) {
 		System.out.println("Processing > " + st);
 		
 	    Scanner sc = new Scanner(st);

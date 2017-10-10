@@ -7,8 +7,6 @@ import java.util.Scanner;
 import javax.swing.JProgressBar;
 import javax.swing.table.DefaultTableModel;
 
-import project4.SeaPortProgram.MainPanel.JobTableModel;
-
 public class Job extends Thing implements Runnable {
 	
 	private static final int MAX_PORT_INDEX = 19999;
@@ -20,13 +18,13 @@ public class Job extends Thing implements Runnable {
 	private ArrayList<String> requirements = new ArrayList<String>();
 	private Thread thread = null;
 	private SeaPort port = null;
-	private JobTableModel tableModel = null;
+	private DefaultTableModel tableModel = null;
 	private int tableRow = -1;
 	private JProgressBar progressBar = new JProgressBar();
     private boolean goFlag = true;
     private boolean noKillFlag = true;
 	
-	public Job(Scanner sc, JobTableModel tableModel, int tableRow) {
+	public Job(Scanner sc, DefaultTableModel tableModel, int tableRow) {
 		super(sc);
 		
 		this.duration = sc.nextDouble();
@@ -56,14 +54,16 @@ public class Job extends Thing implements Runnable {
 	}
 	
 	public void buildJob() {
-		Object[] rowData = new Object[8];
+		Object[] rowData = new Object[12];
 		progressBar.setStringPainted(true);
 		
 		rowData[0] = this.getName();
 		rowData[2] = port.getName(); 
 		rowData[5] = "PROGRESS BAR";
 		rowData[6] = Status.JOB_STOP.getStatus();
-		rowData[7] = Status.JOB_CANCEL.getStatus(); 
+		rowData[7] = Status.JOB_CANCEL.getStatus();
+		rowData[8] = this.getIndex();
+		rowData[9] = port.getIndex();
 				
 		if(requirements.size() == 0) {
 			rowData[1] = Status.NONE.getStatus();			
@@ -80,19 +80,18 @@ public class Job extends Thing implements Runnable {
 		
 		if(dock == null) {
 			rowData[3] = Status.NONE.getStatus();
+			rowData[10] = Status.NONE.getStatus();
 		}else {
 			rowData[3] = dock.getName();
+			rowData[10] = dock.getIndex(); 
 		}
 		
 		rowData[4] = ship.getName();
-		
+		rowData[11] = ship.getIndex(); 
+
 		tableModel.addRow(rowData);
 	}
-	
-	public void toggleGoFlag () {
-		goFlag = !goFlag;
-	}
-		  
+			  
 	public void setKillFlag () {
 		noKillFlag = false;
 	}
@@ -252,8 +251,13 @@ public class Job extends Thing implements Runnable {
 	    	}
 	    }
 	    
-	    showProgressBar(100);
-	    tableModel.setValueAt(Status.JOB_DONE.getStatus(), tableRow, 6);
+	    if(noKillFlag) {
+	    	showProgressBar(100);
+	    	tableModel.setValueAt(Status.JOB_DONE.getStatus(), tableRow, 6);	    	
+	    }else {
+	    	tableModel.setValueAt(Status.JOB_STOPPED.getStatus(), tableRow, 6);
+	    	tableModel.setValueAt(Status.DASH.getStatus(), tableRow, 7);
+	    }
 	}
 	
 	private ArrayList<Job> removeJob(ArrayList<Job> jobs) {
@@ -339,7 +343,7 @@ public class Job extends Thing implements Runnable {
 		return tableModel;
 	}
 
-	public void setTableModel(JobTableModel tableModel) {
+	public void setTableModel(DefaultTableModel tableModel) {
 		this.tableModel = tableModel;
 	}
 
@@ -349,5 +353,21 @@ public class Job extends Thing implements Runnable {
 
 	public void setTableRow(int tableRow) {
 		this.tableRow = tableRow;
+	}
+
+	public boolean isGoFlag() {
+		return goFlag;
+	}
+
+	public void setGoFlag(boolean goFlag) {
+		this.goFlag = goFlag;
+	}
+
+	public boolean isNoKillFlag() {
+		return noKillFlag;
+	}
+
+	public void setNoKillFlag(boolean noKillFlag) {
+		this.noKillFlag = noKillFlag;
 	}
 }

@@ -8,8 +8,10 @@ public enum Status {
 	JOB_SUSPENDED("SUSPENDED", Color.orange),
 	JOB_DONE("DONE", Color.red),
 	JOB_STOP("STOP", Color.white),
+	JOB_STOPPED("STOPPED", Color.white),
 	JOB_CANCEL("CANCEL", Color.red),
 	SHIP_RELEASED("RELEASED", Color.white),
+	DASH("--", Color.white),
 	NONE("NONE", Color.white);
 	
 	private String status;
