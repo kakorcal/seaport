@@ -1,13 +1,13 @@
 package project4;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Queue;
 import java.util.Scanner;
 
-import javax.swing.JButton;
 import javax.swing.JProgressBar;
 import javax.swing.table.DefaultTableModel;
+
+import project4.SeaPortProgram.MainPanel.JobTableModel;
 
 public class Job extends Thing implements Runnable {
 	
@@ -20,15 +20,13 @@ public class Job extends Thing implements Runnable {
 	private ArrayList<String> requirements = new ArrayList<String>();
 	private Thread thread = null;
 	private SeaPort port = null;
-	private DefaultTableModel tableModel = null;
+	private JobTableModel tableModel = null;
 	private int tableRow = -1;
 	private JProgressBar progressBar = new JProgressBar();
     private boolean goFlag = true;
     private boolean noKillFlag = true;
-	private JButton statusBtn = new JButton(Status.JOB_STOP.getStatus());
-	private JButton cancelBtn = new JButton (Status.JOB_CANCEL.getStatus());
 	
-	public Job(Scanner sc, DefaultTableModel tableModel, int tableRow) {
+	public Job(Scanner sc, JobTableModel tableModel, int tableRow) {
 		super(sc);
 		
 		this.duration = sc.nextDouble();
@@ -60,14 +58,12 @@ public class Job extends Thing implements Runnable {
 	public void buildJob() {
 		Object[] rowData = new Object[8];
 		progressBar.setStringPainted(true);
-		statusBtn.setOpaque(true);
-		cancelBtn.setOpaque(true);
 		
 		rowData[0] = this.getName();
 		rowData[2] = port.getName(); 
 		rowData[5] = "PROGRESS BAR";
-		rowData[6] = "STATUS BUTTON";
-		rowData[7] = "CANCEL BUTTON"; 
+		rowData[6] = Status.JOB_STOP.getStatus();
+		rowData[7] = Status.JOB_CANCEL.getStatus(); 
 				
 		if(requirements.size() == 0) {
 			rowData[1] = Status.NONE.getStatus();			
@@ -99,16 +95,8 @@ public class Job extends Thing implements Runnable {
 		  
 	public void setKillFlag () {
 		noKillFlag = false;
-		cancelBtn.setBackground(Color.red);
-		cancelBtn.validate();
 	}
-	
-	void showJobStatus (String status, Color color) {
-		statusBtn.setBackground(color);
-		statusBtn.setText(status);
-		statusBtn.validate();
-	}
-	
+		
 	void showProgressBar(int value) {
 		progressBar.setValue(value);
 		progressBar.validate();
@@ -149,9 +137,10 @@ public class Job extends Thing implements Runnable {
 						port.setQueue(queue);
 						break;
 					}else {
+						Dock skipped = port.getDocks().get(ship.getDockIndex());
 						System.out.println(
 								"Skipping Ship: " + ship.getName() + 
-								", Dock: " + port.getDocks().get(ship.getDockIndex()).getName() + 
+								", Dock: " + (skipped == null ? Status.NONE.getStatus() : skipped.getName())+ 
 								", Port: " + port.getName());
 					}
 				}
@@ -164,6 +153,7 @@ public class Job extends Thing implements Runnable {
 		// check first to see if the ship is in dock
 		synchronized(port) {
 			while(shipInQueue()) {
+				tableModel.setValueAt(Status.JOB_WAITING.getStatus(), tableRow, 6);
 				try {
 					port.wait();
 				} catch (InterruptedException e) { e.printStackTrace(); }
@@ -177,6 +167,7 @@ public class Job extends Thing implements Runnable {
 		// complete the job
 		doJob();
 	    
+		// release the ship, assign queue ship to dock
 		synchronized(port) {
 			Ship ship = port.getShips().get(shipIndex);
 			int dockIndex = ship.getDockIndex();
@@ -222,7 +213,7 @@ public class Job extends Thing implements Runnable {
 					}else {
 						System.out.println(
 								"Skipping Ship: " + queueShip.getName() + 
-								", Dock: NONE" +
+								", Dock: " + Status.NONE.getStatus() +
 								", Port: " + port.getName() + " Dock: NONE");
 					}
 				}
@@ -250,18 +241,19 @@ public class Job extends Thing implements Runnable {
 	    	} catch(InterruptedException e) {}
 	    	
 	    	if(goFlag) {
-	    		showJobStatus(Status.JOB_RUNNING.getStatus(), Status.JOB_RUNNING.getColor());
+	    		tableModel.setValueAt(Status.JOB_RUNNING.getStatus(), tableRow, 6);
+	    		
 	    		time += 10;
 	    		showProgressBar((int)(((time - startTime) / duration) * 100));
 	    		progressBar.setValue((int)(((time - startTime) / duration) * 100));
 	    		progressBar.validate();
 	    	} else {
-	    		showJobStatus(Status.JOB_SUSPENDED.getStatus(), Status.JOB_SUSPENDED.getColor());
+	    		tableModel.setValueAt(Status.JOB_SUSPENDED.getStatus(), tableRow, 6);
 	    	}
 	    }
 	    
 	    showProgressBar(100);
-	    showJobStatus(Status.JOB_DONE.getStatus(), Status.JOB_DONE.getColor());
+	    tableModel.setValueAt(Status.JOB_DONE.getStatus(), tableRow, 6);
 	}
 	
 	private ArrayList<Job> removeJob(ArrayList<Job> jobs) {
@@ -347,7 +339,7 @@ public class Job extends Thing implements Runnable {
 		return tableModel;
 	}
 
-	public void setTableModel(DefaultTableModel tableModel) {
+	public void setTableModel(JobTableModel tableModel) {
 		this.tableModel = tableModel;
 	}
 
