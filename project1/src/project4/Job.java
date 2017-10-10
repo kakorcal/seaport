@@ -39,6 +39,7 @@ public class Job extends Thing implements Runnable {
 	private Thread thread = null;
 	private SeaPort port = null;
 	private DefaultTableModel jobTableModel = null;
+	private DefaultTableModel personTableModel = null;
 	private int jobTableRow = -1;
     private boolean goFlag = true;
     private boolean noKillFlag = true;
@@ -53,6 +54,7 @@ public class Job extends Thing implements Runnable {
 		}
 		
 		this.jobTableModel = jobTableModel;
+		this.personTableModel = personTableModel;
 		this.jobTableRow = jobTableRow;
 		this.thread = new Thread(this, this.getName());
 		
@@ -121,26 +123,11 @@ public class Job extends Thing implements Runnable {
 					ArrayList<Job> jobs = ship.getJobs();
 					
 					if(!jobs.isEmpty()) {
-						port.getDocks()
-						    .get(dockIndex)
-						    .setShipIndex(queueShipIndex);
-						
-						port.getShips()
-							.get(queueShipIndex)
-							.setDockIndex(dockIndex);
-						
-						port.getShips()
-							.get(shipIndex)
-							.setDockIndex(-1);
-						
-						port.getShips()
-							.get(queueShipIndex)
-							.setParent(dockIndex);
-				
-						port.getShips()
-							.get(shipIndex)
-							.setParent(-1);
-						
+						port.getDocks().get(dockIndex).setShipIndex(queueShipIndex);
+						port.getShips().get(queueShipIndex).setDockIndex(dockIndex);
+						port.getShips().get(shipIndex).setDockIndex(-1);
+						port.getShips().get(queueShipIndex).setParent(dockIndex);
+						port.getShips().get(shipIndex).setParent(-1);
 						port.setQueue(queue);
 						break;
 					}else {
@@ -160,7 +147,7 @@ public class Job extends Thing implements Runnable {
 		// check first to see if the ship is in dock
 		synchronized(port) {
 			while(shipInQueue()) {
-				updateJobTable(JOB_WAITING, jobTableRow, 6);
+				updateJobTable(JOB_WAITING, jobTableRow, COLUMN_STATUS_BUTTON);
 				try {
 					port.wait();
 				} catch (InterruptedException e) { e.printStackTrace(); }
@@ -169,6 +156,15 @@ public class Job extends Thing implements Runnable {
 			Ship ship = port.getShips().get(shipIndex);
 			String dockName = port.getDocks().get(ship.getDockIndex()).getName();
 			updateJobTable(dockName, jobTableRow, COLUMN_DOCK);			
+		}
+		
+		// compete for resources
+		synchronized(port) {
+			while(needResources()) {
+				try {
+					port.wait();
+				} catch (InterruptedException e) { e.printStackTrace(); }
+			}
 		}
 		
 		// complete the job
@@ -195,26 +191,11 @@ public class Job extends Thing implements Runnable {
 					ArrayList<Job> queueJob = queueShip.getJobs();
 					
 					if(!queueJob.isEmpty()) {
-						port.getDocks()
-							.get(dockIndex)
-							.setShipIndex(queueShipIndex);
-						
-						port.getShips()
-							.get(queueShipIndex)
-							.setDockIndex(dockIndex);
-						
-						port.getShips()
-							.get(shipIndex)
-							.setDockIndex(-1);
-						
-						port.getShips()
-							.get(queueShipIndex)
-							.setParent(dockIndex);
-					
-						port.getShips()
-							.get(shipIndex)
-							.setParent(-1);
-						
+						port.getDocks().get(dockIndex).setShipIndex(queueShipIndex);
+						port.getShips().get(queueShipIndex).setDockIndex(dockIndex);
+						port.getShips().get(shipIndex).setDockIndex(-1);
+						port.getShips().get(queueShipIndex).setParent(dockIndex);
+						port.getShips().get(shipIndex).setParent(-1);
 						port.setQueue(queue);
 						break;
 					}else {
@@ -292,12 +273,22 @@ public class Job extends Thing implements Runnable {
 		}
 	}
 	
+	// need to implement 
+	private boolean needResources() {
+		
+		return false;
+	}
+	
 	public void setKillFlag () {
 		noKillFlag = false;
 	}
 	
 	public void updateJobTable(Object value, int row, int column) {
 		jobTableModel.setValueAt(value, row, column);
+	}
+	
+	public void updatePersonTable(Object value, int row, int column) {
+		personTableModel.setValueAt(value, row, column);
 	}
 
 	public String toString() {
@@ -357,6 +348,18 @@ public class Job extends Thing implements Runnable {
 	}
 
 	public void setTableModel(DefaultTableModel jobTableModel) {
+		this.jobTableModel = jobTableModel;
+	}
+
+	public DefaultTableModel getPersonTableModel() {
+		return personTableModel;
+	}
+
+	public void setPersonTableModel(DefaultTableModel personTableModel) {
+		this.personTableModel = personTableModel;
+	}
+
+	public void setJobTableModel(DefaultTableModel jobTableModel) {
 		this.jobTableModel = jobTableModel;
 	}
 

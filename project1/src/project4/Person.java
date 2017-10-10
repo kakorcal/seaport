@@ -44,6 +44,7 @@ public class Person extends Thing {
 		rowData[COLUMN_SHIP] = NONE;
 		rowData[COLUMN_JOB] = NONE;
 		rowData[COLUMN_REQUIREMENTS] = NONE;
+		rowData[COLUMN_STATUS] = TERMINATED;
 		rowData[COLUMN_PERSON_INDEX] = this.getIndex();
 		rowData[COLUMN_PORT_INDEX] = port.getIndex();
 		rowData[COLUMN_DOCK_INDEX] = NONE;
