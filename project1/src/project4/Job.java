@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Queue;
 import java.util.Scanner;
 
-import javax.swing.JProgressBar;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 public class Job extends Thing implements Runnable {
@@ -18,13 +18,13 @@ public class Job extends Thing implements Runnable {
 	private ArrayList<String> requirements = new ArrayList<String>();
 	private Thread thread = null;
 	private SeaPort port = null;
+	private JTable table = null;
 	private DefaultTableModel tableModel = null;
 	private int tableRow = -1;
-	private JProgressBar progressBar = new JProgressBar();
     private boolean goFlag = true;
     private boolean noKillFlag = true;
 	
-	public Job(Scanner sc, DefaultTableModel tableModel, int tableRow) {
+	public Job(Scanner sc, JTable table, DefaultTableModel tableModel, int tableRow) {
 		super(sc);
 		
 		this.duration = sc.nextDouble();
@@ -33,6 +33,7 @@ public class Job extends Thing implements Runnable {
 			requirements.add(sc.next());
 		}
 		
+		this.table = table;
 		this.tableModel = tableModel;
 		this.tableRow = tableRow;
 		this.thread = new Thread(this, this.getName());
@@ -55,11 +56,9 @@ public class Job extends Thing implements Runnable {
 	
 	public void buildJob() {
 		Object[] rowData = new Object[12];
-		progressBar.setStringPainted(true);
-		
 		rowData[0] = this.getName();
 		rowData[2] = port.getName(); 
-		rowData[5] = "PROGRESS BAR";
+		rowData[5] = 0;
 		rowData[6] = Status.JOB_STOP.getStatus();
 		rowData[7] = Status.JOB_CANCEL.getStatus();
 		rowData[8] = this.getIndex();
@@ -97,8 +96,7 @@ public class Job extends Thing implements Runnable {
 	}
 		
 	void showProgressBar(int value) {
-		progressBar.setValue(value);
-		progressBar.validate();
+		table.setValueAt(value, tableRow, 5);
 	}
 	
 	public void run() {
@@ -244,8 +242,6 @@ public class Job extends Thing implements Runnable {
 	    		
 	    		time += 10;
 	    		showProgressBar((int)(((time - startTime) / duration) * 100));
-	    		progressBar.setValue((int)(((time - startTime) / duration) * 100));
-	    		progressBar.validate();
 	    	} else {
 	    		tableModel.setValueAt(Status.JOB_SUSPENDED.getStatus(), tableRow, 6);
 	    	}

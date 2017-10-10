@@ -1,6 +1,7 @@
 package project4;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -19,7 +20,6 @@ import java.util.Queue;
 import java.util.Scanner;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -29,12 +29,14 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
@@ -245,7 +247,8 @@ public class SeaPortProgram extends JFrame {
 	        jobTable.removeColumn(jobTable.getColumn("jobIndex"));
 	        jobTable.removeColumn(jobTable.getColumn("portIndex"));
 	        jobTable.removeColumn(jobTable.getColumn("dockIndex"));
-	        jobTable.removeColumn(jobTable.getColumn("shipIndex"));	        
+	        jobTable.removeColumn(jobTable.getColumn("shipIndex"));	
+	        jobTable.getColumn("Progress Bar").setCellRenderer(new ProgressBarRenderer());
 	        jobScrollPane = new JScrollPane(jobTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	        jobScrollPane.setPreferredSize(new Dimension(this.getWidth(), 460));
 			
@@ -290,8 +293,7 @@ public class SeaPortProgram extends JFrame {
 			constraints.insets = new Insets(1, 2, 2, 2);
 			this.add(jobScrollPane, constraints);
 		}
-		
-		
+				
 		// displays search result in separate dialog box
 		private void displayMessage(String title, String message) {
 			JTextArea textArea = new JTextArea(message);
@@ -315,7 +317,7 @@ public class SeaPortProgram extends JFrame {
 					reset();
 					
 					while(sc.hasNextLine()) {
-						world.process(sc.nextLine(), jobTableModel);
+						world.process(sc.nextLine(), jobTable, jobTableModel);
 					}
 					
 					sc.close();
@@ -374,9 +376,7 @@ public class SeaPortProgram extends JFrame {
 	                
 	                world.getPorts().get(portIndex)
             			 .getShips().get(shipIndex)
-            			 .setJobs(jobs);
-	                
-	            	System.out.println("Status clicked: " + jobTableModel.getValueAt(row, 1) + ", " + jobTableModel.getValueAt(row, 8));
+            			 .setJobs(jobs);	                
 	            }
 	        }, 6);
 	        
@@ -403,9 +403,7 @@ public class SeaPortProgram extends JFrame {
 	                
 	                world.getPorts().get(portIndex)
             			 .getShips().get(shipIndex)
-            			 .setJobs(jobs);
-	                
-	                System.out.println("Cancel clicked: " + jobTableModel.getValueAt(row, 1) + ", " + jobTableModel.getValueAt(row, 8));
+            			 .setJobs(jobs);	                
 	            }
 	        }, 7);
 			
@@ -413,6 +411,17 @@ public class SeaPortProgram extends JFrame {
 			jobScrollPane.validate();
 			world.runJobs();
 			
+		}
+		
+		class ProgressBarRenderer extends JProgressBar implements TableCellRenderer {
+			private static final long serialVersionUID = 1L;
+
+			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+					boolean hasFocus, int row, int column) {
+				this.setStringPainted(true);
+				this.setValue((Integer) value);
+				return this;
+			}
 		}
 				
 		class FileButtonListener extends MouseAdapter {

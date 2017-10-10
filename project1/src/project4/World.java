@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Queue;
 import java.util.Scanner;
 
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -22,7 +23,7 @@ public class World extends Thing {
 	}
 	
 	// parses the line of string into individual class members
-	public void process(String st, DefaultTableModel tableModel) {
+	public void process(String st, JTable table, DefaultTableModel tableModel) {
 		System.out.println("Processing > " + st);
 		
 	    Scanner sc = new Scanner(st);
@@ -49,7 +50,7 @@ public class World extends Thing {
 	    		addPerson(new Person(sc));
 	    		break;
 	    	case "job":
-	    		addJob(new Job(sc, tableModel, jobCount));
+	    		addJob(new Job(sc, table, tableModel, jobCount));
 	    		jobCount++;
 	    		break;
 	        default:
