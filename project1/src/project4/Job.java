@@ -4,27 +4,46 @@ import java.util.ArrayList;
 import java.util.Queue;
 import java.util.Scanner;
 
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 public class Job extends Thing implements Runnable {
-	
+	private static final String JOB_RUNNING = "RUNNING";
+	private static final String JOB_WAITING = "WAITING";
+	private static final String JOB_SUSPENDED = "SUSPENDED";
+	private static final String JOB_DONE = "DONE";
+	private static final String JOB_CANCELED = "CANCELED";
+	private static final String JOB_CANCEL = "CANCEL";
+	private static final String SHIP_RELEASED = "RELEASED";
+	private static final String NONE = "NONE";
+	private static final String TERMINATED = "--";
+	private static final int COLUMN_JOB = 0;
+	private static final int COLUMN_REQUIREMENTS = 1;
+	private static final int COLUMN_PORT = 2;
+	private static final int COLUMN_DOCK = 3;
+	private static final int COLUMN_SHIP = 4;
+	private static final int COLUMN_PROGRESS_BAR = 5;
+	private static final int COLUMN_STATUS_BUTTON = 6;
+	private static final int COLUMN_CANCEL_BUTTON = 7;
+	private static final int COLUMN_JOB_INDEX = 8;
+	private static final int COLUMN_PORT_INDEX = 9;
+	private static final int COLUMN_DOCK_INDEX = 10;
+	private static final int COLUMN_SHIP_INDEX = 11;
 	private static final int MAX_PORT_INDEX = 19999;
 	private static final int MAX_DOCK_INDEX = 29999;
 	private static final int MAX_SHIP_INDEX = 49999;
+	
 	private int dockIndex = -1;
 	private int shipIndex = -1;
 	private double duration;
 	private ArrayList<String> requirements = new ArrayList<String>();
 	private Thread thread = null;
 	private SeaPort port = null;
-	private JTable table = null;
-	private DefaultTableModel tableModel = null;
-	private int tableRow = -1;
+	private DefaultTableModel jobTableModel = null;
+	private int jobTableRow = -1;
     private boolean goFlag = true;
     private boolean noKillFlag = true;
 	
-	public Job(Scanner sc, JTable table, DefaultTableModel tableModel, int tableRow) {
+	public Job(Scanner sc, DefaultTableModel jobTableModel, DefaultTableModel personTableModel, int jobTableRow) {
 		super(sc);
 		
 		this.duration = sc.nextDouble();
@@ -33,9 +52,8 @@ public class Job extends Thing implements Runnable {
 			requirements.add(sc.next());
 		}
 		
-		this.table = table;
-		this.tableModel = tableModel;
-		this.tableRow = tableRow;
+		this.jobTableModel = jobTableModel;
+		this.jobTableRow = jobTableRow;
 		this.thread = new Thread(this, this.getName());
 		
 		int parent = this.getParent();
@@ -56,49 +74,41 @@ public class Job extends Thing implements Runnable {
 	
 	public void buildJob() {
 		Object[] rowData = new Object[12];
-		rowData[0] = this.getName();
-		rowData[2] = port.getName(); 
-		rowData[5] = 0;
-		rowData[6] = Status.JOB_STOP.getStatus();
-		rowData[7] = Status.JOB_CANCEL.getStatus();
-		rowData[8] = this.getIndex();
-		rowData[9] = port.getIndex();
+		rowData[COLUMN_JOB] = this.getName();
+		rowData[COLUMN_PORT] = port.getName(); 
+		rowData[COLUMN_PROGRESS_BAR] = 0;
+		rowData[COLUMN_STATUS_BUTTON] = TERMINATED;
+		rowData[COLUMN_CANCEL_BUTTON] = JOB_CANCEL;
+		rowData[COLUMN_JOB_INDEX] = this.getIndex();
+		rowData[COLUMN_PORT_INDEX] = port.getIndex();
 				
 		if(requirements.size() == 0) {
-			rowData[1] = Status.NONE.getStatus();			
+			rowData[COLUMN_REQUIREMENTS] = NONE;			
 		}else {
 			String st = "";
 			for(String requirement: requirements) {
 				st += requirement + " ";
 			}
-			rowData[1] = st;
+			rowData[COLUMN_REQUIREMENTS] = st;
 		}
 		
 		Ship ship = port.getShips().get(shipIndex);
 		Dock dock = port.getDocks().get(ship.getDockIndex());
 		
 		if(dock == null) {
-			rowData[3] = Status.NONE.getStatus();
-			rowData[10] = Status.NONE.getStatus();
+			rowData[COLUMN_DOCK] = NONE;
+			rowData[COLUMN_DOCK_INDEX] = NONE;
 		}else {
-			rowData[3] = dock.getName();
-			rowData[10] = dock.getIndex(); 
+			rowData[COLUMN_DOCK] = dock.getName();
+			rowData[COLUMN_DOCK_INDEX] = dock.getIndex(); 
 		}
 		
-		rowData[4] = ship.getName();
-		rowData[11] = ship.getIndex(); 
+		rowData[COLUMN_SHIP] = ship.getName();
+		rowData[COLUMN_SHIP_INDEX] = ship.getIndex(); 
 
-		tableModel.addRow(rowData);
+		jobTableModel.addRow(rowData);
 	}
-			  
-	public void setKillFlag () {
-		noKillFlag = false;
-	}
-		
-	void showProgressBar(int value) {
-		table.setValueAt(value, tableRow, 5);
-	}
-	
+			  			
 	public void run() {
 		// initially check if ship requires no job and is already at the dock
 		synchronized(port) {
@@ -137,7 +147,7 @@ public class Job extends Thing implements Runnable {
 						Dock skipped = port.getDocks().get(ship.getDockIndex());
 						System.out.println(
 								"Skipping Ship: " + ship.getName() + 
-								", Dock: " + (skipped == null ? Status.NONE.getStatus() : skipped.getName())+ 
+								", Dock: " + (skipped == null ? NONE: skipped.getName())+ 
 								", Port: " + port.getName());
 					}
 				}
@@ -150,7 +160,7 @@ public class Job extends Thing implements Runnable {
 		// check first to see if the ship is in dock
 		synchronized(port) {
 			while(shipInQueue()) {
-				tableModel.setValueAt(Status.JOB_WAITING.getStatus(), tableRow, 6);
+				updateJobTable(JOB_WAITING, jobTableRow, 6);
 				try {
 					port.wait();
 				} catch (InterruptedException e) { e.printStackTrace(); }
@@ -158,7 +168,7 @@ public class Job extends Thing implements Runnable {
 			
 			Ship ship = port.getShips().get(shipIndex);
 			String dockName = port.getDocks().get(ship.getDockIndex()).getName();
-			tableModel.setValueAt(dockName, tableRow, 3);			
+			updateJobTable(dockName, jobTableRow, COLUMN_DOCK);			
 		}
 		
 		// complete the job
@@ -174,7 +184,7 @@ public class Job extends Thing implements Runnable {
 				.get(shipIndex)
 				.setJobs(jobs);
 			
-			tableModel.setValueAt(Status.SHIP_RELEASED.getStatus(), tableRow, 3);
+			updateJobTable(SHIP_RELEASED, jobTableRow, COLUMN_DOCK);
 			
 			if(jobs.isEmpty()) {
 				Queue<Integer> queue = port.getQueue();
@@ -210,8 +220,8 @@ public class Job extends Thing implements Runnable {
 					}else {
 						System.out.println(
 								"Skipping Ship: " + queueShip.getName() + 
-								", Dock: " + Status.NONE.getStatus() +
-								", Port: " + port.getName() + " Dock: NONE");
+								", Dock: " + NONE +
+								", Port: " + port.getName());
 					}
 				}
 			}
@@ -238,21 +248,20 @@ public class Job extends Thing implements Runnable {
 	    	} catch(InterruptedException e) {}
 	    	
 	    	if(goFlag) {
-	    		tableModel.setValueAt(Status.JOB_RUNNING.getStatus(), tableRow, 6);
-	    		
+				updateJobTable(JOB_RUNNING, jobTableRow, COLUMN_STATUS_BUTTON);
 	    		time += 10;
-	    		showProgressBar((int)(((time - startTime) / duration) * 100));
+	    		updateJobTable((int)(((time - startTime) / duration) * 100), jobTableRow, COLUMN_PROGRESS_BAR);
 	    	} else {
-	    		tableModel.setValueAt(Status.JOB_SUSPENDED.getStatus(), tableRow, 6);
+	    		updateJobTable(JOB_SUSPENDED, jobTableRow, COLUMN_STATUS_BUTTON);
 	    	}
 	    }
 	    
 	    if(noKillFlag) {
-	    	showProgressBar(100);
-	    	tableModel.setValueAt(Status.JOB_DONE.getStatus(), tableRow, 6);	    	
+	    	updateJobTable(100, jobTableRow, COLUMN_PROGRESS_BAR);
+	    	updateJobTable(JOB_DONE, jobTableRow, COLUMN_STATUS_BUTTON);
 	    }else {
-	    	tableModel.setValueAt(Status.JOB_STOPPED.getStatus(), tableRow, 6);
-	    	tableModel.setValueAt(Status.DASH.getStatus(), tableRow, 7);
+	    	updateJobTable(JOB_CANCELED, jobTableRow, COLUMN_STATUS_BUTTON);
+	    	updateJobTable(TERMINATED, jobTableRow, COLUMN_CANCEL_BUTTON);
 	    }
 	}
 	
@@ -281,6 +290,14 @@ public class Job extends Thing implements Runnable {
 		}else {
 			return false;
 		}
+	}
+	
+	public void setKillFlag () {
+		noKillFlag = false;
+	}
+	
+	public void updateJobTable(Object value, int row, int column) {
+		jobTableModel.setValueAt(value, row, column);
 	}
 
 	public String toString() {
@@ -335,20 +352,20 @@ public class Job extends Thing implements Runnable {
 		this.port = port;
 	}
 
-	public DefaultTableModel getTableModel() {
-		return tableModel;
+	public DefaultTableModel getJobTableModel() {
+		return jobTableModel;
 	}
 
-	public void setTableModel(DefaultTableModel tableModel) {
-		this.tableModel = tableModel;
+	public void setTableModel(DefaultTableModel jobTableModel) {
+		this.jobTableModel = jobTableModel;
 	}
 
-	public int getTableRow() {
-		return tableRow;
+	public int getJobTableRow() {
+		return jobTableRow;
 	}
 
-	public void setTableRow(int tableRow) {
-		this.tableRow = tableRow;
+	public void setJobTableRow(int jobTableRow) {
+		this.jobTableRow = jobTableRow;
 	}
 
 	public boolean isGoFlag() {

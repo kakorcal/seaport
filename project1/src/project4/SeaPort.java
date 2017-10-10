@@ -10,7 +10,6 @@ public class SeaPort extends Thing {
 	private HashMap<Integer, Ship> ships = new HashMap<Integer, Ship>(); // list of all ships at port
 	private HashMap<Integer, Person> persons = new HashMap<Integer, Person>(); // people with skills at this port
 	private Queue<Integer> queue = new LinkedList<Integer>(); // queue of ships waiting to dock
-	private HashMap<Integer, Thing> items = new HashMap<Integer, Thing>();
 	
 	public SeaPort(Scanner sc) {
 		super(sc);
@@ -75,13 +74,5 @@ public class SeaPort extends Thing {
 
 	public void setPersons(HashMap<Integer, Person> persons) {
 		this.persons = persons;
-	}
-
-	public HashMap<Integer, Thing> getItems() {
-		return items;
-	}
-
-	public void setItems(HashMap<Integer, Thing> items) {
-		this.items = items;
 	}	
 }

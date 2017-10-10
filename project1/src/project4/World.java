@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Queue;
 import java.util.Scanner;
 
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -16,6 +15,7 @@ public class World extends Thing {
 	private HashMap<Integer, SeaPort> ports = new HashMap<Integer, SeaPort>();
 	private HashMap<Integer, Thing> items = new HashMap<Integer, Thing>();
 	private int jobCount = 0;
+	private int personCount = 0;
 	private PortTime time;
 	
 	public World() {
@@ -23,7 +23,7 @@ public class World extends Thing {
 	}
 	
 	// parses the line of string into individual class members
-	public void process(String st, JTable table, DefaultTableModel tableModel) {
+	public void process(String st, DefaultTableModel jobTableModel, DefaultTableModel personTableModel) {
 		System.out.println("Processing > " + st);
 		
 	    Scanner sc = new Scanner(st);
@@ -47,10 +47,11 @@ public class World extends Thing {
 	    		addShip(new CargoShip(sc));	    		
 	    		break;
 	    	case "person":
-	    		addPerson(new Person(sc));
+	    		addPerson(new Person(sc, personTableModel, personCount));
+	    		personCount++;
 	    		break;
 	    	case "job":
-	    		addJob(new Job(sc, table, tableModel, jobCount));
+	    		addJob(new Job(sc, jobTableModel, personTableModel, jobCount));
 	    		jobCount++;
 	    		break;
 	        default:
@@ -217,14 +218,12 @@ public class World extends Thing {
 	public void addPort(SeaPort port) {
 		ports.put(port.getIndex(), port);
 		items.put(port.getIndex(), port);
-		port.getItems().put(port.getIndex(), port);
 	}
 	
 	public void addDock(Dock dock) {
 		SeaPort port = ports.get(dock.getPortIndex());
 		port.getDocks().put(dock.getIndex(), dock);
 		items.put(dock.getIndex(), dock);
-		port.getItems().put(dock.getIndex(), dock);
 	}
 	
 	public void addShip(Ship ship) {
@@ -241,14 +240,14 @@ public class World extends Thing {
 		}
 		
 		items.put(ship.getIndex(), ship);
-		port.getItems().put(ship.getIndex(), ship);
 	}
 	
 	public void addPerson(Person person) {
 		SeaPort port = ports.get(person.getPortIndex());
 		port.getPersons().put(person.getIndex(), person);
 		items.put(person.getIndex(), person);
-		port.getItems().put(person.getIndex(), person);
+		person.setPort(port);
+		person.buildPerson();
 	}
 	
 	public void addJob(Job job) {
@@ -292,7 +291,6 @@ public class World extends Thing {
 		}
 		
 		items.put(job.getIndex(), job);
-		port.getItems().put(job.getIndex(), job);
 		job.setPort(port);
 		job.buildJob();
 	}
@@ -336,5 +334,13 @@ public class World extends Thing {
 
 	public void setJobCount(int jobCount) {
 		this.jobCount = jobCount;
+	}
+
+	public int getPersonCount() {
+		return personCount;
+	}
+
+	public void setPersonCount(int personCount) {
+		this.personCount = personCount;
 	}	
 }

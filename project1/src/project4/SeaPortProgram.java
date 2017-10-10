@@ -134,7 +134,14 @@ public class SeaPortProgram extends JFrame {
         		"jobIndex", "portIndex", "dockIndex", "shipIndex"};
         DefaultTableModel jobTableModel = new DefaultTableModel();
 	    private JScrollPane jobScrollPane;
-	    //private JPanel jobPanel = new JPanel();
+	    
+	    private JTable personTable = new JTable();
+        Object[] personTableColumns = {
+        		"Person", "Skill", "Port", "Dock", 
+        		"Ship", "Job", "Requirements", "Status", "personIndex",
+        		"jobIndex", "portIndex", "dockIndex", "shipIndex"};
+        DefaultTableModel personTableModel = new DefaultTableModel();
+	    private JScrollPane personScrollPane;
 
 		public MainPanel() {
 			
@@ -239,7 +246,7 @@ public class SeaPortProgram extends JFrame {
 	        
 	        
 	        /*
-	         * Job Threads Table
+	         * Job Table
 	         * */	        
 	        jobTableModel.setColumnIdentifiers(jobTableColumns);
 	        jobTable.setModel(jobTableModel);
@@ -250,7 +257,22 @@ public class SeaPortProgram extends JFrame {
 	        jobTable.removeColumn(jobTable.getColumn("shipIndex"));	
 	        jobTable.getColumn("Progress Bar").setCellRenderer(new ProgressBarRenderer());
 	        jobScrollPane = new JScrollPane(jobTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-	        jobScrollPane.setPreferredSize(new Dimension(this.getWidth(), 460));
+	        jobScrollPane.setPreferredSize(new Dimension(this.getWidth(), 230));
+	        
+	        /*
+	         * Person Table
+	         * */
+	        personTableModel.setColumnIdentifiers(personTableColumns);
+	        personTable.setModel(personTableModel);
+	        personTable.setRowHeight(20);
+	        personTable.removeColumn(personTable.getColumn("personIndex"));
+	        personTable.removeColumn(personTable.getColumn("portIndex"));
+	        personTable.removeColumn(personTable.getColumn("dockIndex"));
+	        personTable.removeColumn(personTable.getColumn("shipIndex"));
+	        personTable.removeColumn(personTable.getColumn("jobIndex"));
+	        personScrollPane = new JScrollPane(personTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+	        jobScrollPane.setPreferredSize(new Dimension(this.getWidth(), 230));
+	        
 			
 			/*
 			 * Event handlers
@@ -267,7 +289,6 @@ public class SeaPortProgram extends JFrame {
 			/*
 			 * Main Layout 
 			 * */
-			
 			constraints.fill = GridBagConstraints.BOTH;
 			constraints.weightx = 0.1;
 			constraints.gridx = 0;
@@ -290,8 +311,12 @@ public class SeaPortProgram extends JFrame {
 			constraints.weighty = 0.1;
 			constraints.gridx = 0;
 			constraints.gridy = 1;
-			constraints.insets = new Insets(1, 2, 2, 2);
+			constraints.insets = new Insets(1, 2, 1, 2);
 			this.add(jobScrollPane, constraints);
+			
+			constraints.gridy = 2;
+			constraints.insets = new Insets(1, 2, 2, 2);
+			this.add(personScrollPane, constraints);
 		}
 				
 		// displays search result in separate dialog box
@@ -317,7 +342,7 @@ public class SeaPortProgram extends JFrame {
 					reset();
 					
 					while(sc.hasNextLine()) {
-						world.process(sc.nextLine(), jobTable, jobTableModel);
+						world.process(sc.nextLine(), jobTableModel, personTableModel);
 					}
 					
 					sc.close();
@@ -338,6 +363,7 @@ public class SeaPortProgram extends JFrame {
 			world.setItems(new HashMap<Integer, Thing>());
 			world.setJobCount(0);
 			jobTableModel.setRowCount(0);
+			personTableModel.setRowCount(0);
 			
 //			try {
 //				Thread.sleep(1000);
@@ -408,7 +434,9 @@ public class SeaPortProgram extends JFrame {
 	        }, 7);
 			
 			jobTableModel.setRowCount(world.getJobCount());
+			personTableModel.setRowCount(world.getPersonCount());
 			jobScrollPane.validate();
+			personScrollPane.validate();
 			world.runJobs();
 			
 		}
@@ -419,7 +447,10 @@ public class SeaPortProgram extends JFrame {
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
 					boolean hasFocus, int row, int column) {
 				this.setStringPainted(true);
-				this.setValue((Integer) value);
+				
+				if(value instanceof Integer) {
+					this.setValue((Integer) value);					
+				}
 				return this;
 			}
 		}
