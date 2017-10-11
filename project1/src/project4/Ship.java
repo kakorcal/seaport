@@ -16,6 +16,7 @@ public class Ship extends Thing {
 	private double weight;
 	private double width;
 	private ArrayList<Job> jobs = new ArrayList<Job>();
+	private ArrayList<Integer> jobRows = new ArrayList<Integer>();
 	
 	public Ship(Scanner sc) {
 		super(sc);
@@ -118,5 +119,13 @@ public class Ship extends Thing {
 
 	public void setJobs(ArrayList<Job> jobs) {
 		this.jobs = jobs;
+	}
+
+	public ArrayList<Integer> getJobRows() {
+		return jobRows;
+	}
+
+	public void setJobRows(ArrayList<Integer> jobRows) {
+		this.jobRows = jobRows;
 	}	
 }

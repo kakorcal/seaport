@@ -272,7 +272,6 @@ public class SeaPortProgram extends JFrame {
 	        personScrollPane = new JScrollPane(personTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	        jobScrollPane.setPreferredSize(new Dimension(this.getWidth(), 230));
 	        
-			
 			/*
 			 * Event handlers
 			 * */

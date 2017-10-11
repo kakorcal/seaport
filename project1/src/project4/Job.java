@@ -95,7 +95,7 @@ public class Job extends Thing implements Runnable {
 			  			
 	public void run() {
 		try {
-			Thread.sleep(10);
+			Thread.sleep(100);
 		} catch (InterruptedException e1) { e1.printStackTrace(); }
 		
 		// initially check if ship requires no job and is already at the dock
@@ -169,9 +169,14 @@ public class Job extends Thing implements Runnable {
 			}
 			
 			port.getShips().get(shipIndex).setJobs(jobs);
-			updateJobTable(Constant.SHIP_RELEASED, jobTableRow, Constant.JOB_DOCK);
 			
 			if(jobs.isEmpty()) {
+				ArrayList<Integer> jobRows = ship.getJobRows();
+				for(int row: jobRows) {
+					updateJobTable(ship.getName() + " -- " + Constant.SHIP_RELEASED, row, Constant.JOB_SHIP);
+					updateJobTable(Constant.IDLE, row, Constant.JOB_DOCK);
+				}
+				
 				assignNewShip(shipIndex, dockIndex);
 			}
 			port.notifyAll();

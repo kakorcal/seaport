@@ -266,10 +266,8 @@ public class World extends Thing {
 			job.setShipIndex(shipIndex);
 			job.setDockIndex(-1);
 			
-			port.getShips()
-				.get(shipIndex)
-				.getJobs()
-				.add(job);
+			port.getShips().get(shipIndex).getJobs().add(job);
+			port.getShips().get(shipIndex).getJobRows().add(job.getJobTableRow());
 		}else {
 			Thing ship = items.get(job.getShipIndex());
 			
@@ -277,18 +275,14 @@ public class World extends Thing {
 			if(parent <= Constant.MAX_PORT_INDEX) {
 				port = ports.get(parent);
 				
-			    port.getShips()
-					.get(ship.getIndex())
-					.getJobs()
-					.add(job);
+			    port.getShips().get(ship.getIndex()).getJobs().add(job);
+			    port.getShips().get(ship.getIndex()).getJobRows().add(job.getJobTableRow());
 			}else if (parent > Constant.MAX_PORT_INDEX && parent <= Constant.MAX_DOCK_INDEX){
 				dock = items.get(parent);
 				port = ports.get(dock.getParent());
 				
-				port.getShips()
-					.get(ship.getIndex())
-					.getJobs()	
-					.add(job);
+				port.getShips().get(ship.getIndex()).getJobs().add(job);
+				port.getShips().get(ship.getIndex()).getJobRows().add(job.getJobTableRow());				
 			}
 		}
 		
