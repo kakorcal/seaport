@@ -8,6 +8,7 @@ import java.util.Scanner;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+// main instance in which the SeaPortProgram communicates with
 public class World extends Thing {
 	
 	private HashMap<Integer, SeaPort> ports = new HashMap<Integer, SeaPort>();
@@ -59,6 +60,7 @@ public class World extends Thing {
 	    sc.close();
 	}
 	
+	// constructs treeNode from root
 	public void toTree(DefaultMutableTreeNode root) {
 		for(int portKey: ports.keySet()) {
 			SeaPort port = ports.get(portKey);
@@ -187,6 +189,7 @@ public class World extends Thing {
 		}
 	}
 	
+	// starts all the threads
 	public void runJobs() {
 		for(int portKey: ports.keySet()) {
 			SeaPort port = ports.get(portKey);

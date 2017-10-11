@@ -43,9 +43,11 @@ import javax.swing.tree.DefaultTreeModel;
 
 /*
  * File: SeaPortProgram.java
- * Date: Sep 17, 2017
+ * Date: Oct 12, 2017
  * Author: Kenneth Korcal
- * Purpose: read data file, parse into data structure, and render the data into a GUI with searching and sorting capabilities
+ * Purpose: read data file, parse into data structure
+ * 			, render the data into a GUI with searching and sorting capabilities
+ * 			, and create threads to simulate concurrent processes
  * */
 
 /*
@@ -61,14 +63,12 @@ import javax.swing.tree.DefaultTreeModel;
  * 6. add sort capabilities (width, weight, draft, length, name)
  * 7. extend Project 2 to use the Swing class JTree effectively to display the contents of the data file
  * 8. create a thread for each job, cannot run until a ship has a dock, create a GUI to show the progress of each job.
- * 
+ * 9. create shared resources for job threads. the threads must gather matching resources in order to complete the job.
  * */
 
 public class SeaPortProgram extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-//	private static final int WIDTH = 1100;
-//	private static final int HEIGHT = 700;
 	
 	public static void main(String[] args) {
 		SeaPortProgram app = new SeaPortProgram();
@@ -86,7 +86,6 @@ public class SeaPortProgram extends JFrame {
 	}
 
 	private void setFrame() {
-		//setSize(WIDTH, HEIGHT);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -97,7 +96,8 @@ public class SeaPortProgram extends JFrame {
 	 * JFileChooser, JButton - for user to select file
 	 * JScrollPane, JTextArea - for displaying output
 	 * JTextField, JLabel, JButton, JRadioButton - for searching and sorting
-	 * 
+	 * JTree - alternative output
+	 * JTable - for job and person tables
 	 * */
 	
 	public class MainPanel extends JPanel {
@@ -228,7 +228,6 @@ public class SeaPortProgram extends JFrame {
 			/*
 			 * Tree area
 			 * */
-			
 	        tree = new JTree(root);
 	        tree.setRootVisible(false);
 	        treeModel = (DefaultTreeModel) tree.getModel();
@@ -380,11 +379,10 @@ public class SeaPortProgram extends JFrame {
 			world.toTree(root);
 			treeModel.reload(root);
 			
-			// job table
+			// job and person table
 	        new ButtonColumn(jobTable, new AbstractAction() {
 	        	private static final long serialVersionUID = 1L;
 	            public void actionPerformed(ActionEvent e) {
-	            	//JTable table = (JTable) e.getSource();
 	                int row = Integer.valueOf(e.getActionCommand());
 	                int jobIndex = (int) jobTableModel.getValueAt(row, Constant.JOB_INDEX);
 	                int portIndex = (int) jobTableModel.getValueAt(row, Constant.JOB_PORT_INDEX);
@@ -410,7 +408,6 @@ public class SeaPortProgram extends JFrame {
 	        new ButtonColumn(jobTable, new AbstractAction() {
 				private static final long serialVersionUID = 1L;
 				public void actionPerformed(ActionEvent e) {
-	            	//JTable table = (JTable) e.getSource();
 	                int row = Integer.valueOf(e.getActionCommand());
 	                int jobIndex = (int) jobTableModel.getValueAt(row, Constant.JOB_INDEX);
 	                int portIndex = (int) jobTableModel.getValueAt(row, Constant.JOB_PORT_INDEX);
