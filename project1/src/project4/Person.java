@@ -5,21 +5,6 @@ import java.util.Scanner;
 import javax.swing.table.DefaultTableModel;
 
 public class Person extends Thing {
-	private static final int COLUMN_PERSON = 0;
-	private static final int COLUMN_SKILL = 1;
-	private static final int COLUMN_PORT = 2;
-	private static final int COLUMN_DOCK = 3;
-	private static final int COLUMN_SHIP = 4;
-	private static final int COLUMN_JOB = 5;
-	private static final int COLUMN_REQUIREMENTS = 6;
-	private static final int COLUMN_STATUS = 7;
-	private static final int COLUMN_PERSON_INDEX = 8;
-	private static final int COLUMN_PORT_INDEX = 9;
-	private static final int COLUMN_DOCK_INDEX = 10;
-	private static final int COLUMN_SHIP_INDEX = 11;
-	private static final int COLUMN_JOB_INDEX = 12;
-	private static final String NONE = "NONE";
-	private static final String TERMINATED = "--";
 	
 	private int portIndex = -1;
 	private String skill;
@@ -35,21 +20,21 @@ public class Person extends Thing {
 		this.personTableRow = personTableRow;
 	}
 	
-	public void buildPerson() {
+	public void buildPerson() {		
 		Object[] rowData = new Object[13];
-		rowData[COLUMN_PERSON] = this.getName();
-		rowData[COLUMN_SKILL] = this.getSkill(); 
-		rowData[COLUMN_PORT] = port.getName();
-		rowData[COLUMN_DOCK] = NONE;
-		rowData[COLUMN_SHIP] = NONE;
-		rowData[COLUMN_JOB] = NONE;
-		rowData[COLUMN_REQUIREMENTS] = NONE;
-		rowData[COLUMN_STATUS] = TERMINATED;
-		rowData[COLUMN_PERSON_INDEX] = this.getIndex();
-		rowData[COLUMN_PORT_INDEX] = port.getIndex();
-		rowData[COLUMN_DOCK_INDEX] = NONE;
-		rowData[COLUMN_SHIP_INDEX] = NONE;
-		rowData[COLUMN_JOB_INDEX] = NONE;
+		rowData[Constant.PERSON_NAME] = this.getName();
+		rowData[Constant.PERSON_SKILL] = this.getSkill(); 
+		rowData[Constant.PERSON_PORT] = port.getName();
+		rowData[Constant.PERSON_DOCK] = Constant.IDLE;
+		rowData[Constant.PERSON_SHIP] = Constant.IDLE;
+		rowData[Constant.PERSON_JOB] = Constant.IDLE;
+		rowData[Constant.PERSON_REQUIREMENTS] = Constant.IDLE;
+		rowData[Constant.PERSON_STATUS] = Constant.PERSON_UNASSIGNED_JOB;
+		rowData[Constant.PERSON_INDEX] = this.getIndex();
+		rowData[Constant.PERSON_PORT_INDEX] = port.getIndex();
+		rowData[Constant.PERSON_DOCK_INDEX] = Constant.NONE;
+		rowData[Constant.PERSON_SHIP_INDEX] = Constant.NONE;
+		rowData[Constant.PERSON_JOB_INDEX] = Constant.NONE;
 		personTableModel.addRow(rowData);
 	}
 

@@ -19,6 +19,8 @@ import javax.swing.table.*;
  *  the model row number of the button that was clicked.
  *
  */
+
+// http://www.camick.com/java/source/ButtonColumn.java
 public class ButtonColumn extends AbstractCellEditor
 	implements TableCellRenderer, TableCellEditor, ActionListener, MouseListener
 {

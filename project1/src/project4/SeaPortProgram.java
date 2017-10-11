@@ -385,9 +385,9 @@ public class SeaPortProgram extends JFrame {
 	            public void actionPerformed(ActionEvent e) {
 	            	//JTable table = (JTable) e.getSource();
 	                int row = Integer.valueOf(e.getActionCommand());
-	                int jobIndex = (int) jobTableModel.getValueAt(row, 8);
-	                int portIndex = (int) jobTableModel.getValueAt(row, 9);
-	                int shipIndex = (int) jobTableModel.getValueAt(row, 11);
+	                int jobIndex = (int) jobTableModel.getValueAt(row, Constant.JOB_INDEX);
+	                int portIndex = (int) jobTableModel.getValueAt(row, Constant.JOB_PORT_INDEX);
+	                int shipIndex = (int) jobTableModel.getValueAt(row, Constant.JOB_SHIP_INDEX);
 	                
 	                ArrayList<Job> jobs = world
 	                		.getPorts().get(portIndex)
@@ -404,17 +404,16 @@ public class SeaPortProgram extends JFrame {
             			 .getShips().get(shipIndex)
             			 .setJobs(jobs);	                
 	            }
-	        }, 6);
+	        }, Constant.JOB_STATUS_BUTTON);
 	        
 	        new ButtonColumn(jobTable, new AbstractAction() {
 				private static final long serialVersionUID = 1L;
 				public void actionPerformed(ActionEvent e) {
 	            	//JTable table = (JTable) e.getSource();
 	                int row = Integer.valueOf(e.getActionCommand());
-	                
-	                int jobIndex = (int) jobTableModel.getValueAt(row, 8);
-	                int portIndex = (int) jobTableModel.getValueAt(row, 9);
-	                int shipIndex = (int) jobTableModel.getValueAt(row, 11);
+	                int jobIndex = (int) jobTableModel.getValueAt(row, Constant.JOB_INDEX);
+	                int portIndex = (int) jobTableModel.getValueAt(row, Constant.JOB_PORT_INDEX);
+	                int shipIndex = (int) jobTableModel.getValueAt(row, Constant.JOB_SHIP_INDEX);
 	                
 	                ArrayList<Job> jobs = world
 	                		.getPorts().get(portIndex)
@@ -431,7 +430,7 @@ public class SeaPortProgram extends JFrame {
             			 .getShips().get(shipIndex)
             			 .setJobs(jobs);	                
 	            }
-	        }, 7);
+	        }, Constant.JOB_CANCEL_BUTTON);
 			
 			jobTableModel.setRowCount(world.getJobCount());
 			personTableModel.setRowCount(world.getPersonCount());

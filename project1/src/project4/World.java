@@ -10,8 +10,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 public class World extends Thing {
 	
-	private static final int MAX_PORT_INDEX = 19999;
-	private static final int MAX_DOCK_INDEX = 29999;
 	private HashMap<Integer, SeaPort> ports = new HashMap<Integer, SeaPort>();
 	private HashMap<Integer, Thing> items = new HashMap<Integer, Thing>();
 	private int jobCount = 0;
@@ -245,6 +243,7 @@ public class World extends Thing {
 	public void addPerson(Person person) {
 		SeaPort port = ports.get(person.getPortIndex());
 		port.getPersons().put(person.getIndex(), person);
+		port.getPool().add(person);
 		items.put(person.getIndex(), person);
 		person.setPort(port);
 		person.buildPerson();
@@ -272,14 +271,14 @@ public class World extends Thing {
 			Thing ship = items.get(job.getShipIndex());
 			
 			int parent = ship.getParent();
-			if(parent <= MAX_PORT_INDEX) {
+			if(parent <= Constant.MAX_PORT_INDEX) {
 				port = ports.get(parent);
 				
 			    port.getShips()
 					.get(ship.getIndex())
 					.getJobs()
 					.add(job);
-			}else if (parent > MAX_PORT_INDEX && parent <= MAX_DOCK_INDEX){
+			}else if (parent > Constant.MAX_PORT_INDEX && parent <= Constant.MAX_DOCK_INDEX){
 				dock = items.get(parent);
 				port = ports.get(dock.getParent());
 				
@@ -292,6 +291,7 @@ public class World extends Thing {
 		
 		items.put(job.getIndex(), job);
 		job.setPort(port);
+		job.setPool(port.getPool());
 		job.buildJob();
 	}
 		

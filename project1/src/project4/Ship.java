@@ -7,8 +7,6 @@ public class Ship extends Thing {
 	
 	public static final String CARGO = "Cargo";
 	public static final String PASSENGER = "Passenger";
-	private static final int MAX_PORT_INDEX = 19999;
-	private static final int MAX_DOCK_INDEX = 29999;
 	private int portIndex = -1;
 	private int dockIndex = -1;
 	private PortTime arrivalTime;
@@ -27,9 +25,9 @@ public class Ship extends Thing {
 		this.draft = sc.nextDouble();
 		
 		int parent = this.getParent();
-		if(parent <= MAX_PORT_INDEX) {
+		if(parent <= Constant.MAX_PORT_INDEX) {
 			this.portIndex = parent;
-		}else if (parent > MAX_PORT_INDEX && parent <= MAX_DOCK_INDEX){
+		}else if (parent > Constant.MAX_PORT_INDEX && parent <= Constant.MAX_DOCK_INDEX){
 			this.dockIndex = parent;
 		}
 	}

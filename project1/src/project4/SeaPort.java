@@ -4,17 +4,20 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
 
 public class SeaPort extends Thing {
 	private HashMap<Integer, Dock> docks = new HashMap<Integer, Dock>();
 	private HashMap<Integer, Ship> ships = new HashMap<Integer, Ship>(); // list of all ships at port
 	private HashMap<Integer, Person> persons = new HashMap<Integer, Person>(); // people with skills at this port
 	private Queue<Integer> queue = new LinkedList<Integer>(); // queue of ships waiting to dock
+	private BlockingDeque<Person> pool = new LinkedBlockingDeque<Person>();
 	
 	public SeaPort(Scanner sc) {
 		super(sc);
 	}
-
+	
 	public String toString() {
 		String st = "\n\n>>> SeaPort: " + super.toString();
 
@@ -74,5 +77,13 @@ public class SeaPort extends Thing {
 
 	public void setPersons(HashMap<Integer, Person> persons) {
 		this.persons = persons;
-	}	
+	}
+
+	public BlockingDeque<Person> getPool() {
+		return pool;
+	}
+
+	public void setPool(BlockingDeque<Person> pool) {
+		this.pool = pool;
+	}
 }
