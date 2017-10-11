@@ -243,7 +243,7 @@ public class World extends Thing {
 	public void addPerson(Person person) {
 		SeaPort port = ports.get(person.getPortIndex());
 		port.getPersons().put(person.getIndex(), person);
-		port.getPool().add(person);
+		port.getPool().put(person.getIndex(), person);
 		items.put(person.getIndex(), person);
 		person.setPort(port);
 		person.buildPerson();
@@ -291,7 +291,6 @@ public class World extends Thing {
 		
 		items.put(job.getIndex(), job);
 		job.setPort(port);
-		job.setPool(port.getPool());
 		job.buildJob();
 	}
 		

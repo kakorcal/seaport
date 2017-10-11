@@ -353,6 +353,7 @@ public class SeaPortProgram extends JFrame {
 					treeModel.reload(root);
 				}
 			}catch(Exception e) {
+				e.printStackTrace();
 				textAreaField.setText("Failed to process file");
 				root.removeAllChildren();
 				treeModel.reload(root);
@@ -437,7 +438,6 @@ public class SeaPortProgram extends JFrame {
 			jobScrollPane.validate();
 			personScrollPane.validate();
 			world.runJobs();
-			
 		}
 		
 		class ProgressBarRenderer extends JProgressBar implements TableCellRenderer {

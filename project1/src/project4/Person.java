@@ -11,6 +11,8 @@ public class Person extends Thing {
 	private SeaPort port = null;
 	private DefaultTableModel personTableModel = null;
 	private int personTableRow = -1;
+	// job index
+	private int employment = -1;
 	
 	public Person(Scanner sc, DefaultTableModel personTableModel, int personTableRow) {
 		super(sc);
@@ -80,5 +82,13 @@ public class Person extends Thing {
 
 	public void setPersonTableRow(int personTableRow) {
 		this.personTableRow = personTableRow;
-	}	
+	}
+
+	public int getEmployment() {
+		return employment;
+	}
+
+	public void setEmployment(int employment) {
+		this.employment = employment;
+	}
 }
