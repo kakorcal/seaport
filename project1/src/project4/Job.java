@@ -24,6 +24,7 @@ public class Job extends Thing implements Runnable {
     private boolean goFlag = true;
     private boolean noKillFlag = true;
     private boolean allSkillsFound = false;
+    private int tryCount = 0;
 	
 	public Job(Scanner sc, DefaultTableModel jobTableModel, DefaultTableModel personTableModel, int jobTableRow) {
 		super(sc);
@@ -148,22 +149,21 @@ public class Job extends Thing implements Runnable {
 			
 			if(requiredResourcesCount == 0) {
 				allSkillsFound = true;
-				return;
-			}
-			
-			registerResources();
-						
-			while(acquiringResources()) {
-				try {
-					port.wait();
-				} catch (InterruptedException e) { e.printStackTrace(); }
-			}
-			
-			if(requirements.size() == resources.size()) {
-				allSkillsFound = true;
+			}else {
+				registerResources();
+				
+				while(acquiringResources()) {
+					try {
+						port.wait(5000);
+					} catch (InterruptedException e) { e.printStackTrace(); }
+				}
+				
+				if(requirements.size() == resources.size()) {
+					allSkillsFound = true;
+				}				
 			}
 		}
-			
+					
 		if(allSkillsFound) {
 			doJob();						
 		}else {
@@ -229,38 +229,64 @@ public class Job extends Thing implements Runnable {
 			for(Person person: pool.values()) {
 				if(requirement.equals(person.getSkill())) {
 					resources.add(person);
+					break;
 				}
 			}
 		}
 	}
 		
-	private boolean acquiringResources() {		
-		for(Person resource: resources) {
-			Person person = port.getPool().get(resource.getIndex());
-			if(person.getEmployment() == -1) {
-				port.getPool().get(resource.getIndex()).setEmployment(this.getIndex());
-				resource.setEmployment(this.getIndex());
-				
-				int row = person.getPersonTableRow();
-				Ship ship = port.getShips().get(shipIndex);
-				int dockIndex = ship.getDockIndex();
-				Dock dock = port.getDocks().get(dockIndex);
-				
-				updatePersonTable(dock.getName(), row, Constant.PERSON_DOCK);
-				updatePersonTable(ship.getName(), row, Constant.PERSON_SHIP);
-				updatePersonTable(this.getName(), row, Constant.PERSON_JOB);
-				updatePersonTable(getRequirementsList(requirementsCopy), row, Constant.PERSON_REQUIREMENTS);
-				updatePersonTable(Constant.PERSON_ASSIGNED_JOB, row, Constant.PERSON_STATUS);
+	private boolean acquiringResources() {
+		System.out.println("Acquiring Resources: tryCount " + tryCount);
+		tryCount++;		
+		if(tryCount < 15) {
+			for(Person resource: resources) {
+				Person person = port.getPool().get(resource.getIndex());
+				if(person.getEmployment() == -1) {
+					port.getPool().get(resource.getIndex()).setEmployment(this.getIndex());
+					resource.setEmployment(this.getIndex());
+					
+					int row = person.getPersonTableRow();
+					Ship ship = port.getShips().get(shipIndex);
+					int dockIndex = ship.getDockIndex();
+					Dock dock = port.getDocks().get(dockIndex);
+					
+					updatePersonTable(dock.getName(), row, Constant.PERSON_DOCK);
+					updatePersonTable(ship.getName(), row, Constant.PERSON_SHIP);
+					updatePersonTable(this.getName(), row, Constant.PERSON_JOB);
+					updatePersonTable(getRequirementsList(requirementsCopy), row, Constant.PERSON_REQUIREMENTS);
+					updatePersonTable(Constant.PERSON_ASSIGNED_JOB, row, Constant.PERSON_STATUS);
+				}
 			}
-		}
-		
-		for(Person resource: resources) {
-			if(resource.getEmployment() != this.getIndex()) {
-				return true;
+			
+			for(Person resource: resources) {
+				if(resource.getEmployment() != this.getIndex()) {
+					return true;
+				}
 			}
+			
+			return false;			
+		}else {
+			// release the resources and try again
+			System.out.println("Resetting Resources: " + this.getName());
+			tryCount = 0;
+			for(Person resource: resources) {
+				Person person = port.getPool().get(resource.getIndex());
+				if(person.getEmployment() == this.getIndex()) {
+					port.getPool().get(resource.getIndex()).setEmployment(-1);
+					resource.setEmployment(-1);
+					
+					int row = person.getPersonTableRow();
+					
+					updatePersonTable(Constant.IDLE, row, Constant.PERSON_DOCK);
+					updatePersonTable(Constant.IDLE, row, Constant.PERSON_SHIP);
+					updatePersonTable(Constant.IDLE, row, Constant.PERSON_JOB);
+					updatePersonTable(Constant.IDLE, row, Constant.PERSON_REQUIREMENTS);
+					updatePersonTable(Constant.PERSON_UNASSIGNED_JOB, row, Constant.PERSON_STATUS);
+				}
+			}
+						
+			return true;
 		}
-		
-		return false;
 	}
 			
 	private void doJob() {				
@@ -275,13 +301,15 @@ public class Job extends Thing implements Runnable {
 	    		", Dock: " + port.getDocks().get(ship.getDockIndex()).getName() +
 	    		", Port: " + port.getName());
 	    
-	    for(Person person: resources) {
-	    	updatePersonTable(Constant.PERSON_WORKING, person.getPersonTableRow(), Constant.PERSON_STATUS);
+	    if(requiredResourcesCount != 0) {
+	    	for(Person person: resources) {
+	    		updatePersonTable(Constant.PERSON_WORKING, person.getPersonTableRow(), Constant.PERSON_STATUS);
+	    	}	    	
 	    }
-	    	    
+	    
 	    while(time < stopTime && noKillFlag) {
 	    	try {
-	    		Thread.sleep(1000);
+	    		Thread.sleep(500);
 	    	} catch(InterruptedException e) {}
 	    	
 	    	if(goFlag) {
@@ -291,8 +319,10 @@ public class Job extends Thing implements Runnable {
 	    	} else {
 	    		updateJobTable(Constant.JOB_SUSPENDED, jobTableRow, Constant.JOB_STATUS_BUTTON);
 	    		
-	    	    for(Person person: resources) {
-	    	    	updatePersonTable(Constant.JOB_SUSPENDED, person.getPersonTableRow(), Constant.PERSON_STATUS);
+	    	    if(requiredResourcesCount != 0) {    	
+	    	    	for(Person person: resources) {
+	    	    		updatePersonTable(Constant.JOB_SUSPENDED, person.getPersonTableRow(), Constant.PERSON_STATUS);
+	    	    	}
 	    	    }
 	    	}
 	    }
@@ -301,15 +331,19 @@ public class Job extends Thing implements Runnable {
 	    	updateJobTable(100, jobTableRow, Constant.JOB_PROGRESS_BAR);
 	    	updateJobTable(Constant.JOB_DONE, jobTableRow, Constant.JOB_STATUS_BUTTON);
 	    	
-    	    for(Person person: resources) {
-    	    	updatePersonTable(Constant.JOB_DONE, person.getPersonTableRow(), Constant.PERSON_STATUS);
+    	    if(requiredResourcesCount != 0) {
+    	    	for(Person person: resources) {
+    	    		updatePersonTable(Constant.JOB_DONE, person.getPersonTableRow(), Constant.PERSON_STATUS);
+    	    	}    	
     	    }
 	    }else {
 	    	updateJobTable(Constant.JOB_CANCELED, jobTableRow, Constant.JOB_STATUS_BUTTON);
 	    	updateJobTable(Constant.IDLE, jobTableRow, Constant.JOB_CANCEL_BUTTON);
 	    	
-    	    for(Person person: resources) {
-    	    	updatePersonTable(Constant.JOB_CANCELED, person.getPersonTableRow(), Constant.PERSON_STATUS);
+    	    if(requiredResourcesCount != 0) {
+    	    	for(Person person: resources) {
+    	    		updatePersonTable(Constant.JOB_CANCELED, person.getPersonTableRow(), Constant.PERSON_STATUS);
+    	    	}    	
     	    }
 	    }
 	}
@@ -333,7 +367,7 @@ public class Job extends Thing implements Runnable {
 	
 	private boolean shipInQueue() {
 		Ship ship = port.getShips().get(shipIndex);
-		
+		System.out.println("Attempting to dock: " + ship.getName());
 		if(ship.getDockIndex() == -1) {
 			return true;
 		}else {
